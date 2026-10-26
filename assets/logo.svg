@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" fill="none">
+  <defs>
+    <!-- Gold Metallic Gradients -->
+    <linearGradient id="goldBevel" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff8db"/>
+      <stop offset="25%" stop-color="#d4af37"/>
+      <stop offset="50%" stop-color="#8a6712"/>
+      <stop offset="75%" stop-color="#ffd768"/>
+      <stop offset="100%" stop-color="#735308"/>
+    </linearGradient>
+
+    <linearGradient id="goldText" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d4af37"/>
+    </linearGradient>
+
+    <!-- Carbon Fiber Background Gradient -->
+    <radialGradient id="carbonBg" cx="50%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#1c1f26"/>
+      <stop offset="70%" stop-color="#0a0c10"/>
+      <stop offset="100%" stop-color="#040507"/>
+    </radialGradient>
+
+    <!-- Ambient Outer Gold Glow -->
+    <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#d4af37" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- Outer Beveled Shield Frame -->
+  <path d="M60 4 L112 22 C112 22 108 86 86 112 L60 136 L34 112 C12 86 8 22 8 22 L60 4 Z"
+        fill="url(#goldBevel)" filter="url(#goldGlow)"/>
+
+  <!-- Inner Dark Carbon Shield Plate -->
+  <path d="M60 10 L106 26 C106 26 102 82 82 106 L60 128 L38 106 C18 82 14 26 14 26 L60 10 Z"
+        fill="url(#carbonBg)" stroke="url(#goldBevel)" stroke-width="1.5"/>
+
+  <!-- Top Ribbon Banner with "DHP" -->
+  <path d="M26 25 L94 25 L88 38 L32 38 Z" fill="url(#goldBevel)" opacity="0.95"/>
+  <text x="60" y="34.5" text-anchor="middle" font-family="'JetBrains Mono', 'Montserrat', -apple-system, sans-serif"
+        font-size="8" font-weight="900" fill="#06070a" letter-spacing="3">VAULT 01</text>
+
+  <!-- Stylized Geometric Raging Bull Silhouette & Supercar Aero Wings -->
+  <g transform="translate(60, 72) scale(0.85)">
+    <!-- Bull Horns & Head Facets -->
+    <!-- Horn Left -->
+    <path d="M-8 -26 C-18 -34 -28 -28 -34 -16 C-32 -20 -22 -24 -14 -18 Z" fill="url(#goldBevel)"/>
+    <!-- Horn Right -->
+    <path d="M8 -26 C18 -34 28 -28 34 -16 C32 -20 22 -24 14 -18 Z" fill="url(#goldBevel)"/>
+
+    <!-- Geometric Crown & Face Plate -->
+    <polygon points="0,-22 12,-14 8,0 0,-4 -8,0 -12,-14" fill="url(#goldBevel)"/>
+    
+    <!-- Muscular Bull Shoulders & Front Stance (Aventador Hexagonal Angle) -->
+    <path d="M-22 -8 L-30 8 L-18 16 L-8 6 L0 10 L8 6 L18 16 L30 8 L22 -8 L12 -12 L0 -8 L-12 -12 Z"
+          fill="url(#goldBevel)" opacity="0.9"/>
+    
+    <!-- Central Aero V-Splitter -->
+    <polygon points="0,-2 6,14 0,22 -6,14" fill="#0a0c10"/>
+  </g>
+
+  <!-- DHP Monogram in Bold Liquid Gold at Bottom -->
+  <text x="60" y="104" text-anchor="middle" font-family="'Montserrat', 'Outfit', -apple-system, sans-serif"
+        font-size="11" font-weight="900" fill="url(#goldText)" letter-spacing="3"
+        filter="drop-shadow(0 2px 4px rgba(0,0,0,0.8))">DHP</text>
+
+  <!-- Bottom Accent Pip -->
+  <circle cx="60" cy="116" r="2" fill="url(#goldBevel)"/>
+</svg>

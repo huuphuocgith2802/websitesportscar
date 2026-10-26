@@ -1,0 +1,19 @@
+# OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Editor & AI tools
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.gemini/
+
+# Temporary / Backup files
+*.backup.html
+*.bak
+*.tmp
+*.log

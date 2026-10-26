@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  <title>TOÀN CẢNH SIÊU XE 360° — ĐINH HỮU PHƯỚC | LAMBORGHINI AVENTADOR SV</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Luxury Automotive Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+  <!-- Three.js r128 + OrbitControls + Postprocessing + GLTFLoader -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+
+  <!-- GSAP 3.12 for smooth camera tweens -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+  <style>
+    :root {
+      --gold: #d4af37;
+      --gold-bright: #fff2c2;
+      --gold-dark: #8a6d1c;
+      --bg-dark: #050608;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg-dark);
+      color: #fff;
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* 3D Canvas Container */
+    #canvas-container {
+      position: absolute;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      touch-action: none;
+      z-index: 1;
+    }
+
+    #canvas-container canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+      outline: none;
+    }
+
+    /* Luxury Typography */
+    .font-display {
+      font-family: 'Outfit', 'Montserrat', sans-serif;
+      letter-spacing: -0.015em;
+    }
+    .font-mono-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-feature-settings: "tnum";
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Liquid Gold Gradient */
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #fce28b 0%, #fff6d9 26%, #d4af37 54%, #eab33a 78%, #a0781e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 12px rgba(212, 175, 55, 0.35));
+    }
+
+    /* Glassmorphism Panels */
+    .glass-hud {
+      background: rgba(9, 11, 16, 0.82);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+    .glass-gold-active {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.22), rgba(212, 175, 55, 0.08));
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(212, 175, 55, 0.6);
+      box-shadow: 0 8px 24px rgba(212, 175, 55, 0.25), inset 0 0 12px rgba(212, 175, 55, 0.15);
+    }
+
+    /* Pulsing Gold Ring */
+    .avatar-gold-ring {
+      background: linear-gradient(135deg, #d4af37, #fef08a, #b45309, #d4af37);
+      background-size: 300% 300%;
+      animation: goldShimmer 4s ease infinite;
+    }
+    @keyframes goldShimmer {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Interactive 3D Hotspot Pins */
+    .hotspot-pin {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      z-index: 20;
+      pointer-events: auto;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .hotspot-pin:hover {
+      transform: translate(-50%, -50%) scale(1.22);
+    }
+    .hotspot-ring {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid rgba(212, 175, 55, 0.9);
+      animation: hotspotPulse 2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+    }
+    @keyframes hotspotPulse {
+      0% { transform: scale(0.6); opacity: 1; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+    .hotspot-core {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fff2c2, #d4af37);
+      border: 2px solid #06070a;
+      box-shadow: 0 0 14px rgba(212, 175, 55, 0.8);
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Custom Scrollbar for Drawer */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Hide UI Mode */
+    body.hide-ui #top-header,
+    body.hide-ui #camera-angles-bar,
+    body.hide-ui #bottom-dock,
+    body.hide-ui #hotspots-container,
+    body.hide-ui #watermark-badge {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(20px);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #unhide-btn {
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+    body.hide-ui #unhide-btn {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Safe Area Inset Support (iPhone Notch & Dynamic Island) */
+    .safe-top {
+      padding-top: max(1rem, env(safe-area-inset-top));
+    }
+    .safe-bottom {
+      padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+  </style>
+</head>
+<body class="bg-[#050608] text-white">
+
+  <!-- ════════════════════════════════════════════════════════
+       3D WEBGL FULL VIEWPORT CANVAS
+  ════════════════════════════════════════════════════════ -->
+  <div id="canvas-container" title="Chạm/Kéo để xoay 360° · Cuộn/Chụm 2 ngón để phóng to"></div>
+
+  <!-- ════════════════════════════════════════════════════════
+       INTERACTIVE 3D HOTSPOTS CONTAINER
+  ════════════════════════════════════════════════════════ -->
+  <div id="hotspots-container" class="absolute inset-0 pointer-events-none z-20 overflow-hidden">
+    <!-- Hotspots injected via JS -->
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       TOP HEADER NAVIGATION HUD (Mobile, Laptop, iPad)
+  ════════════════════════════════════════════════════════ -->
+  <header id="top-header" class="fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-3.5 sm:px-6 md:px-8 py-3 sm:py-4 transition-all duration-300 safe-top pointer-events-none">
+    
+    <!-- Left: Back to Home + Owner Crest Brand -->
+    <div class="flex items-center gap-2 sm:gap-4 pointer-events-auto">
+      <a href="./index.html" class="glass-hud hover:glass-gold-active text-amber-300 hover:text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-display font-semibold flex items-center gap-1.5 sm:gap-2 transition-all duration-200 border border-white/10 group shadow-lg" title="Quay lại trang câu chuyện siêu xe">
+        <svg class="w-4 h-4 transition-transform group-hover:-translate-x-1 text-amber-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        <span>TRANG CHỦ</span>
+      </a>
+
+      <!-- Brand Identity Badge -->
+      <a href="./index.html#section-owner" class="hidden sm:flex items-center gap-2.5 glass-hud px-3.5 py-1.5 rounded-full border border-white/10 hover:border-amber-400/40 transition-colors">
+        <div class="w-6 h-7 flex-shrink-0 drop-shadow-[0_0_10px_rgba(212,175,55,0.5)]">
+          <img src="./assets/logo.svg" alt="DHP Emblem" class="w-full h-full object-contain"/>
+        </div>
+        <div class="w-7 h-7 rounded-full p-[1.5px] avatar-gold-ring shadow-sm flex-shrink-0">
+          <img src="./assets/owner_black.png" alt="Đinh Hữu Phước" class="w-full h-full object-cover rounded-full"/>
+        </div>
+        <div>
+          <div class="font-display font-bold text-xs gold-gradient-text tracking-wide leading-none">ĐINH HỮU PHƯỚC</div>
+          <div class="font-mono-num text-[9px] text-white/50 tracking-widest uppercase">360° SUPERCAR VAULT</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Center: Model Title Pill (Hidden on tiny screens) -->
+    <div class="hidden md:flex items-center gap-2 glass-hud px-4 py-1.5 rounded-full border border-amber-400/30 shadow-xl pointer-events-auto">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span class="font-display font-extrabold text-xs tracking-wider gold-gradient-text">LAMBORGHINI AVENTADOR SV</span>
+      <span class="text-white/30 text-xs">|</span>
+      <span class="font-mono-num text-[10px] text-amber-200 font-semibold tracking-widest">V12 6.5L · 750 HP</span>
+    </div>
+
+    <!-- Right: Quick Action Buttons (Photo, Auto-Rotate, Hotspots, Hide UI) -->
+    <div class="flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
+      <!-- Auto Rotate 360 Toggle -->
+      <button id="btn-toggle-auto-rot" onclick="toggleAutoRotate()" class="glass-hud hover:glass-gold-active text-white/80 hover:text-amber-300 p-2 sm:px-3 sm:py-2 rounded-full text-xs font-mono-num flex items-center gap-1.5 transition-all duration-200 border border-white/10" title="Bật/Tắt chế độ tự động xoay 360°">
+        <svg id="icon-rot" class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        <span class="hidden lg:inline text-[11px] font-semibold">XOAY 360°</span>
+      </button>
+
+      <!-- Toggle 3D Hotspots Pins -->
+      <button id="btn-toggle-hotspots" onclick="toggleHotspotsVisibility()" class="glass-hud hover:glass-gold-active text-amber-300 p-2 sm:px-3 sm:py-2 rounded-full text-xs font-mono-num flex items-center gap-1.5 transition-all duration-200 border border-amber-400/40" title="Ẩn/Hiện điểm thông số kỹ thuật 3D">
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-400"></span>
+        </span>
+        <span class="hidden md:inline text-[11px] font-semibold">ĐIỂM GHI CHÚ</span>
+      </button>
+
+      <!-- 4K Snapshot Button -->
+      <button onclick="takeSnapshot4K()" class="glass-hud hover:glass-gold-active text-white/90 hover:text-amber-300 p-2 sm:px-3.5 sm:py-2 rounded-full text-xs font-mono-num flex items-center gap-1.5 transition-all duration-200 border border-white/10" title="Chụp ảnh toàn cảnh xe độ phân giải cao">
+        <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <span class="hidden sm:inline text-[11px] font-semibold">CHỤP ẢNH</span>
+      </button>
+
+      <!-- Hide UI Toggle (Pure Fullscreen viewing) -->
+      <button onclick="toggleHideUI(true)" class="glass-hud text-white/70 hover:text-amber-300 p-2 sm:p-2.5 rounded-full transition-all duration-200 border border-white/10" title="Ẩn giao diện để chiêm ngưỡng toàn màn hình">
+        <svg class="w-4 h-4 text-white/80" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+        </svg>
+      </button>
+
+      <!-- Fullscreen Toggle -->
+      <button onclick="toggleFullscreen()" class="glass-hud text-white/70 hover:text-amber-300 p-2 sm:p-2.5 rounded-full transition-all duration-200 border border-white/10 hidden sm:block" title="Bật/Tắt chế độ toàn màn hình">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ════════════════════════════════════════════════════════
+       CAMERA PRESET QUICK-ACCESS CHIPS (Top-Sub or Floating)
+  ════════════════════════════════════════════════════════ -->
+  <aside id="camera-angles-bar" class="fixed top-16 sm:top-20 left-1/2 -translate-x-1/2 z-25 flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-full glass-hud border border-white/10 shadow-2xl max-w-[94vw] overflow-x-auto no-scrollbar pointer-events-auto">
+    <span class="font-mono-num text-[10px] text-amber-400 font-bold tracking-wider px-1.5 hidden md:inline">GÓC NHÌN:</span>
+    <button onclick="setCameraPreset('hero')" class="cam-chip active px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-mono-num font-semibold text-amber-300 glass-gold-active border border-amber-400 transition-all flex items-center gap-1 flex-shrink-0">
+      <span>🌐</span><span>TOÀN CẢNH</span>
+    </button>
+    <button onclick="setCameraPreset('front')" class="cam-chip px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-mono-num font-medium text-white/70 hover:text-white glass-hud border border-white/5 transition-all flex items-center gap-1 flex-shrink-0">
+      <span>🏎️</span><span>ĐẦU XE</span>
+    </button>
+    <button onclick="setCameraPreset('side')" class="cam-chip px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-mono-num font-medium text-white/70 hover:text-white glass-hud border border-white/5 transition-all flex items-center gap-1 flex-shrink-0">
+      <span>🚪</span><span>BÊN HÔNG</span>
+    </button>
+    <button onclick="setCameraPreset('rear')" class="cam-chip px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-mono-num font-medium text-white/70 hover:text-white glass-hud border border-white/5 transition-all flex items-center gap-1 flex-shrink-0">
+      <span>🏁</span><span>ĐUÔI XE</span>
+    </button>
+    <button onclick="setCameraPreset('top')" class="cam-chip px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-mono-num font-medium text-white/70 hover:text-white glass-hud border border-white/5 transition-all flex items-center gap-1 flex-shrink-0">
+      <span>🔝</span><span>TRÊN CAO</span>
+    </button>
+    <button onclick="setCameraPreset('cockpit')" class="cam-chip px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-mono-num font-medium text-white/70 hover:text-white glass-hud border border-white/5 transition-all flex items-center gap-1 flex-shrink-0">
+      <span>💺</span><span>KHOANG LÁI</span>
+    </button>
+    <button onclick="setCameraPreset('wheel')" class="cam-chip px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-mono-num font-medium text-white/70 hover:text-white glass-hud border border-white/5 transition-all flex items-center gap-1 flex-shrink-0">
+      <span>🎯</span><span>MÂM XE</span>
+    </button>
+  </aside>
+
+  <!-- ════════════════════════════════════════════════════════
+       HOTSPOT TECHNICAL SPEC MODAL / CARD (Pops up when clicked)
+  ════════════════════════════════════════════════════════ -->
+  <div id="hotspot-modal" class="fixed inset-0 z-40 flex items-center justify-center p-4 pointer-events-none opacity-0 transition-opacity duration-300">
+    <div id="hotspot-modal-card" class="glass-hud rounded-3xl p-5 sm:p-6 max-w-sm sm:max-w-md w-full border border-amber-400/40 shadow-2xl pointer-events-auto transform scale-95 transition-transform duration-300 relative">
+      <!-- Close button -->
+      <button onclick="closeHotspotModal()" class="absolute top-4 right-4 text-white/60 hover:text-amber-300 p-1.5 rounded-full glass-hud border border-white/10 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+
+      <div class="flex items-center gap-2 mb-2">
+        <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+        <span id="hotspot-category" class="font-mono-num text-[10px] text-amber-300 font-bold uppercase tracking-widest">CHI TIẾT KỸ THUẬT</span>
+      </div>
+
+      <h3 id="hotspot-title" class="font-display font-extrabold text-lg sm:text-xl text-white mb-2 leading-snug">ĐỘNG CƠ V12 6.5L HÚT KHÍ TỰ NHIÊN</h3>
+      <p id="hotspot-desc" class="font-body text-xs sm:text-sm text-white/80 leading-relaxed mb-4">
+        Khối động cơ V12 đặt giữa sản sinh công suất cực đại 750 mã lực tại 8.400 vòng/phút, mô-men xoắn 690 Nm. Tăng tốc 0-100 km/h trong 2.8 giây.
+      </p>
+
+      <div id="hotspot-stats" class="grid grid-cols-2 gap-2 border-t border-white/10 pt-3 mb-4">
+        <div class="glass-hud p-2 rounded-xl text-center">
+          <div class="font-mono-num text-[9px] text-white/50 uppercase">CÔNG SUẤT</div>
+          <div class="font-display font-black text-amber-300 text-base">750 HP</div>
+        </div>
+        <div class="glass-hud p-2 rounded-xl text-center">
+          <div class="font-mono-num text-[9px] text-white/50 uppercase">TỐC ĐỘ TỐI ĐA</div>
+          <div class="font-display font-black text-amber-300 text-base">> 350 KM/H</div>
+        </div>
+      </div>
+
+      <button onclick="closeHotspotModal()" class="w-full py-2.5 rounded-xl font-display font-bold text-xs tracking-wider uppercase text-black bg-gradient-to-r from-amber-300 via-amber-400 to-yellow-200 hover:brightness-110 shadow-lg transition-all">
+        TIẾP TỤC KHÁM PHÁ 360°
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       UNHIDE UI FLOATING BUTTON (Visible only when UI is hidden)
+  ════════════════════════════════════════════════════════ -->
+  <button id="unhide-btn" onclick="toggleHideUI(false)" class="fixed bottom-6 right-6 z-50 glass-gold-active text-amber-300 px-4 py-2.5 rounded-full text-xs font-mono-num font-bold flex items-center gap-2 border border-amber-400/50 shadow-2xl cursor-pointer">
+    <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+    <span>HIỆN BẢNG ĐIỀU KHIỂN</span>
+  </button>
+
+  <!-- ════════════════════════════════════════════════════════
+       BOTTOM SHOWROOM CONTROLLER DOCK (Responsive Tabs)
+  ════════════════════════════════════════════════════════ -->
+  <footer id="bottom-dock" class="fixed bottom-3 sm:bottom-5 left-1/2 -translate-x-1/2 z-30 w-[95vw] sm:w-[92vw] max-w-4xl transition-all duration-300 safe-bottom pointer-events-none">
+    
+    <!-- Expandable Content Panel Drawer -->
+    <div id="dock-drawer" class="glass-hud rounded-3xl p-3.5 sm:p-5 border border-white/10 shadow-2xl mb-2 sm:mb-3 pointer-events-auto transition-all duration-300">
+      
+      <!-- TAB 1: MÀU SƠN PBR & CHẤT LIỆU (Default Tab) -->
+      <div id="tab-panel-paint" class="tab-panel">
+        <div class="flex items-center justify-between border-b border-white/10 pb-2.5 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+            <span class="font-mono-num text-[11px] text-amber-300 font-bold uppercase tracking-wider">MÀU SƠN NGOẠI THẤT PBR:</span>
+          </div>
+          <span id="current-paint-name" class="font-mono-num text-xs font-bold text-amber-200 tracking-wider">MATTE GRIGIO TITANS</span>
+        </div>
+
+        <!-- 8 Official Lamborghini Colors Swatches -->
+        <div class="flex flex-wrap items-center justify-between sm:justify-start gap-2.5 sm:gap-3 mb-3">
+          <!-- Grigio Titans -->
+          <button onclick="setPaintColor(0x2e3036, 'MATTE GRIGIO TITANS', 0.48, 0.42)" class="paint-swatch active relative w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-amber-400 bg-[#2e3036] shadow-md hover:scale-115 transition-transform" title="Matte Grigio Titans"></button>
+          <!-- Giallo Orion (Yellow) -->
+          <button onclick="setPaintColor(0xd4af37, 'GIALLO ORION (VÀNG SV)', 0.22, 0.65)" class="paint-swatch relative w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-white/20 bg-[#d4af37] shadow-md hover:scale-115 transition-transform" title="Giallo Orion"></button>
+          <!-- Arancio Argos (Orange) -->
+          <button onclick="setPaintColor(0xe0540d, 'ARANCIO ARGOS (CAM METALLIC)', 0.20, 0.55)" class="paint-swatch relative w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-white/20 bg-[#e0540d] shadow-md hover:scale-115 transition-transform" title="Arancio Argos"></button>
+          <!-- Rosso Mars (Red) -->
+          <button onclick="setPaintColor(0xa81313, 'ROSSO MARS (ĐỎ CORSA)', 0.18, 0.45)" class="paint-swatch relative w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-white/20 bg-[#a81313] shadow-md hover:scale-115 transition-transform" title="Rosso Mars"></button>
+          <!-- Verde Ithaca (Green) -->
+          <button onclick="setPaintColor(0x57bc1e, 'VERDE ITHACA (XANH MANTIS)', 0.24, 0.52)" class="paint-swatch relative w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-white/20 bg-[#57bc1e] shadow-md hover:scale-115 transition-transform" title="Verde Ithaca"></button>
+          <!-- Bianco Isis (White) -->
+          <button onclick="setPaintColor(0xedeef0, 'BIANCO ISIS (TRẮNG NGỌC)', 0.25, 0.35)" class="paint-swatch relative w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-white/20 bg-[#edeef0] shadow-md hover:scale-115 transition-transform" title="Bianco Isis"></button>
+          <!-- Blu Cepheus (Cyan Blue) -->
+          <button onclick="setPaintColor(0x1a8ecb, 'BLU CEPHEUS (XANH CYAN)', 0.20, 0.60)" class="paint-swatch relative w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-white/20 bg-[#1a8ecb] shadow-md hover:scale-115 transition-transform" title="Blu Cepheus"></button>
+          <!-- Viola SE30 (Purple Heritage) -->
+          <button onclick="setPaintColor(0x581c87, 'VIOLA SE30 (TÍM HUYỀN THOẠI)', 0.22, 0.70)" class="paint-swatch relative w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-white/20 bg-[#581c87] shadow-md hover:scale-115 transition-transform" title="Viola SE30"></button>
+          <!-- Nero Pegaso (Deep Black) -->
+          <button onclick="setPaintColor(0x0a0b0d, 'NERO PEGASO (ĐEN TUYỀN)', 0.15, 0.85)" class="paint-swatch relative w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-white/20 bg-[#0a0b0d] shadow-md hover:scale-115 transition-transform" title="Nero Pegaso"></button>
+        </div>
+
+        <!-- Finish selector & Caliper Color -->
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-white/5">
+          <div class="flex items-center gap-1.5">
+            <span class="font-mono-num text-[10px] text-white/50 uppercase">CHẤT LIỆU:</span>
+            <button onclick="setPaintFinish('matte')" class="finish-btn active px-2.5 py-1 rounded-lg text-[10px] font-mono-num font-bold text-amber-300 glass-gold-active border border-amber-400">NHÁM (MATTE)</button>
+            <button onclick="setPaintFinish('gloss')" class="finish-btn px-2.5 py-1 rounded-lg text-[10px] font-mono-num font-bold text-white/70 glass-hud hover:text-white">BÓNG (GLOSS)</button>
+            <button onclick="setPaintFinish('metallic')" class="finish-btn px-2.5 py-1 rounded-lg text-[10px] font-mono-num font-bold text-white/70 glass-hud hover:text-white">ÁNH KIM</button>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <span class="font-mono-num text-[10px] text-white/50 uppercase">CÙM PHANH:</span>
+            <button onclick="setCaliperColor(0xd4af37)" class="w-5 h-5 rounded-full bg-[#d4af37] border border-white/30 hover:scale-110 transition-transform" title="Vàng Gold SV"></button>
+            <button onclick="setCaliperColor(0xef4444)" class="w-5 h-5 rounded-full bg-[#ef4444] border border-white/30 hover:scale-110 transition-transform" title="Đỏ Corsa"></button>
+            <button onclick="setCaliperColor(0x06b6d4)" class="w-5 h-5 rounded-full bg-[#06b6d4] border border-white/30 hover:scale-110 transition-transform" title="Xanh Cyan"></button>
+            <button onclick="setCaliperColor(0xe2e8f0)" class="w-5 h-5 rounded-full bg-[#e2e8f0] border border-white/30 hover:scale-110 transition-transform" title="Bạc Kim Loại"></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: TƯƠNG TÁC CƠ HỌC (Doors, Aero, Wireframe) -->
+      <div id="tab-panel-mechanics" class="tab-panel hidden">
+        <div class="flex items-center justify-between border-b border-white/10 pb-2 mb-3">
+          <span class="font-mono-num text-[11px] text-amber-300 font-bold uppercase tracking-wider">CƠ CHẾ HOẠT ĐỘNG KHÍ ĐỘNG HỌC & CỬA:</span>
+          <span class="font-mono-num text-[10px] text-white/50">SCISSOR DOORS & AERO</span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <!-- Toggle Doors -->
+          <button id="btn-dock-doors" onclick="toggleDoors()" class="glass-gold-active p-3 rounded-2xl border border-amber-400 flex flex-col items-center justify-center gap-1.5 transition-all text-center hover:scale-102">
+            <span class="text-xl">🚪</span>
+            <span id="label-dock-doors" class="font-display font-bold text-xs text-amber-300">ĐÓNG CỬA CẮT KÉO</span>
+            <span class="font-mono-num text-[9px] text-white/50">Góc mở 65°</span>
+          </button>
+
+          <!-- Toggle Headlights -->
+          <button id="btn-dock-lights" onclick="toggleHeadlights()" class="glass-gold-active p-3 rounded-2xl border border-amber-400 flex flex-col items-center justify-center gap-1.5 transition-all text-center hover:scale-102">
+            <span class="text-xl">💡</span>
+            <span id="label-dock-lights" class="font-display font-bold text-xs text-amber-300">TẮT ĐÈN PHA Y-LED</span>
+            <span class="font-mono-num text-[9px] text-white/50">Cường độ cao</span>
+          </button>
+
+          <!-- Toggle Wireframe / X-Ray Mode -->
+          <button id="btn-dock-wireframe" onclick="toggleWireframe()" class="glass-hud p-3 rounded-2xl border border-white/10 flex flex-col items-center justify-center gap-1.5 transition-all text-center hover:border-amber-400/50">
+            <span class="text-xl">📐</span>
+            <span id="label-dock-wireframe" class="font-display font-bold text-xs text-white/80">CHẾ ĐỘ X-RAY (LƯỚI)</span>
+            <span class="font-mono-num text-[9px] text-white/50">Khung gầm Carbon</span>
+          </button>
+
+          <!-- Import Custom GLB file -->
+          <button onclick="document.getElementById('file-model-input').click()" class="glass-hud p-3 rounded-2xl border border-white/10 flex flex-col items-center justify-center gap-1.5 transition-all text-center hover:border-amber-400/50">
+            <span class="text-xl">📁</span>
+            <span class="font-display font-bold text-xs text-white/80">NẠP FILE 3D (.GLB)</span>
+            <span class="font-mono-num text-[9px] text-white/50">Blender / Model ngoài</span>
+          </button>
+          <input type="file" id="file-model-input" accept=".glb,.gltf" class="hidden"/>
+        </div>
+      </div>
+
+      <!-- TAB 3: MÔI TRƯỜNG & ÁNH SÁNG STUDIO -->
+      <div id="tab-panel-studio" class="tab-panel hidden">
+        <div class="flex items-center justify-between border-b border-white/10 pb-2 mb-3">
+          <span class="font-mono-num text-[11px] text-amber-300 font-bold uppercase tracking-wider">KHÔNG GIAN TRƯNG BÀY & ĐÈN GẦM:</span>
+          <span class="font-mono-num text-[10px] text-white/50">STUDIO LIGHTING</span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+          <button onclick="setStudioEnvironment('vault')" class="studio-btn active glass-gold-active p-2.5 rounded-xl border border-amber-400 text-left">
+            <div class="font-display font-bold text-xs text-amber-300">TRẦN KIM CƯƠNG</div>
+            <div class="font-mono-num text-[9px] text-white/60">Diamond Grid LED</div>
+          </button>
+          <button onclick="setStudioEnvironment('cyberpunk')" class="studio-btn glass-hud p-2.5 rounded-xl border border-white/10 text-left hover:border-white/30">
+            <div class="font-display font-bold text-xs text-white/90">CYBERPUNK NEON</div>
+            <div class="font-mono-num text-[9px] text-white/60">Đêm Tokyo Tím Xanh</div>
+          </button>
+          <button onclick="setStudioEnvironment('clean')" class="studio-btn glass-hud p-2.5 rounded-xl border border-white/10 text-left hover:border-white/30">
+            <div class="font-display font-bold text-xs text-white/90">STUDIO TỐI GIẢN</div>
+            <div class="font-mono-num text-[9px] text-white/60">Ánh Sáng Mềm Mại</div>
+          </button>
+          <button onclick="setStudioEnvironment('sunset')" class="studio-btn glass-hud p-2.5 rounded-xl border border-white/10 text-left hover:border-white/30">
+            <div class="font-display font-bold text-xs text-white/90">HOÀNG HÔN GOLD</div>
+            <div class="font-mono-num text-[9px] text-white/60">Ánh Nắng Chiều Tà</div>
+          </button>
+        </div>
+
+        <!-- Underglow Neon Color Picker -->
+        <div class="flex items-center justify-between pt-1 border-t border-white/5">
+          <span class="font-mono-num text-[10px] text-white/60 uppercase">ĐÈN GẦM THỂ THAO (UNDERGLOW NEON):</span>
+          <div class="flex items-center gap-2">
+            <button onclick="setUnderglowColor(0x000000)" class="px-2 py-0.5 rounded text-[10px] font-mono-num bg-white/10 hover:bg-white/20 text-white/70">TẮT</button>
+            <button onclick="setUnderglowColor(0xd4af37)" class="w-5 h-5 rounded-full bg-[#d4af37] border border-white/30 hover:scale-110" title="Gold Neon"></button>
+            <button onclick="setUnderglowColor(0x06b6d4)" class="w-5 h-5 rounded-full bg-[#06b6d4] border border-white/30 hover:scale-110" title="Cyan Neon"></button>
+            <button onclick="setUnderglowColor(0xef4444)" class="w-5 h-5 rounded-full bg-[#ef4444] border border-white/30 hover:scale-110" title="Red Neon"></button>
+            <button onclick="setUnderglowColor(0xa855f7)" class="w-5 h-5 rounded-full bg-[#a855f7] border border-white/30 hover:scale-110" title="Purple Neon"></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: ÂM THANH ĐỘNG CƠ V12 -->
+      <div id="tab-panel-sound" class="tab-panel hidden">
+        <div class="flex items-center justify-between border-b border-white/10 pb-2 mb-3">
+          <span class="font-mono-num text-[11px] text-amber-300 font-bold uppercase tracking-wider">ÂM THANH V12 THỰC TẾ (WEB AUDIO API):</span>
+          <span class="font-mono-num text-[10px] text-emerald-400 font-semibold" id="sound-rpm-indicator">8.400 RPM READY</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button id="btn-sound-start" onclick="toggleEngineSound()" class="glass-hud hover:glass-gold-active p-3 rounded-2xl border border-white/10 flex items-center justify-center gap-3 transition-all">
+            <span class="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></span>
+            <div class="text-left">
+              <div class="font-display font-bold text-xs text-white" id="engine-start-text">KHỞI ĐỘNG ĐỘNG CƠ (IGNITION)</div>
+              <div class="font-mono-num text-[9px] text-white/50">Tiếng nổ garanti gầm gừ V12</div>
+            </div>
+          </button>
+
+          <button onclick="revEngineSound()" class="glass-gold-active p-3 rounded-2xl border border-amber-400/80 flex items-center justify-center gap-3 transition-all hover:scale-102">
+            <span class="text-xl">🔥</span>
+            <div class="text-left">
+              <div class="font-display font-black text-xs text-amber-300">ĐẠP GA NẠP TỐC (REV 8.400 RPM)</div>
+              <div class="font-mono-num text-[9px] text-amber-200/70">Phụt lửa pô & rung lắc xe</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Segmented Bottom Category Tab Pills (Mobile-First Thumb Friendly) -->
+    <nav class="flex items-center justify-around sm:justify-center gap-1.5 sm:gap-3 glass-hud p-1.5 rounded-full border border-white/10 shadow-2xl pointer-events-auto">
+      <button onclick="switchTab('paint')" class="tab-pill active flex-1 sm:flex-initial px-3 sm:px-5 py-2 rounded-full text-xs font-display font-bold text-amber-300 glass-gold-active border border-amber-400 transition-all flex items-center justify-center gap-1.5">
+        <span>🎨</span><span class="text-[11px] sm:text-xs">SƠN XE</span>
+      </button>
+      <button onclick="switchTab('mechanics')" class="tab-pill flex-1 sm:flex-initial px-3 sm:px-5 py-2 rounded-full text-xs font-display font-bold text-white/70 hover:text-white glass-hud border border-white/5 transition-all flex items-center justify-center gap-1.5">
+        <span>🚪</span><span class="text-[11px] sm:text-xs">CỬA & AERO</span>
+      </button>
+      <button onclick="switchTab('studio')" class="tab-pill flex-1 sm:flex-initial px-3 sm:px-5 py-2 rounded-full text-xs font-display font-bold text-white/70 hover:text-white glass-hud border border-white/5 transition-all flex items-center justify-center gap-1.5">
+        <span>💡</span><span class="text-[11px] sm:text-xs">STUDIO</span>
+      </button>
+      <button onclick="switchTab('sound')" class="tab-pill flex-1 sm:flex-initial px-3 sm:px-5 py-2 rounded-full text-xs font-display font-bold text-white/70 hover:text-white glass-hud border border-white/5 transition-all flex items-center justify-center gap-1.5">
+        <span>🔊</span><span class="text-[11px] sm:text-xs">ÂM THANH</span>
+      </button>
+      <!-- Collapse / Toggle Drawer button -->
+      <button onclick="toggleDockDrawer()" class="p-2 rounded-full text-white/60 hover:text-amber-300 transition-colors" title="Thu gọn / Mở rộng bảng tùy chỉnh">
+        <svg id="drawer-toggle-icon" class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+    </nav>
+  </footer>
+
+  <!-- ════════════════════════════════════════════════════════
+       SUBTLE OWNER WATERMARK (Bottom-Right on Laptop/Desktop)
+  ════════════════════════════════════════════════════════ -->
+  <div id="watermark-badge" class="fixed bottom-3 right-4 z-20 pointer-events-none hidden xl:flex items-center gap-2 glass-hud px-3 py-1.5 rounded-full border border-white/5 opacity-60">
+    <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+    <span class="font-mono-num text-[10px] text-white/60 tracking-wider">ĐINH HỮU PHƯỚC GARAGE · 10.9574°N 106.8427°E</span>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       LOADING OVERLAY WITH PROGRESS INDICATOR
+  ════════════════════════════════════════════════════════ -->
+  <div id="loader-overlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#050608] transition-opacity duration-700 pointer-events-auto">
+    <div class="relative mb-6">
+      <div class="w-16 h-16 rounded-full p-[2px] avatar-gold-ring shadow-[0_0_30px_rgba(212,175,55,0.6)]">
+        <img src="./assets/owner_black.png" alt="Owner Avatar" class="w-full h-full object-cover rounded-full"/>
+      </div>
+      <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-black animate-ping"></div>
+    </div>
+
+    <div class="font-display font-black text-xl sm:text-2xl tracking-widest gold-gradient-text uppercase mb-2">
+      LAMBORGHINI AVENTADOR SV
+    </div>
+    <div class="font-mono-num text-xs text-white/60 tracking-[0.25em] uppercase mb-6">
+      ĐANG KHỞI TẠO TOÀN CẢNH 3D · ĐINH HỮU PHƯỚC
+    </div>
+
+    <!-- Progress bar -->
+    <div class="w-64 h-1.5 bg-white/10 rounded-full overflow-hidden p-0.5 border border-white/10">
+      <div id="loading-bar-fill" class="h-full bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-500 rounded-full transition-all duration-300 w-1/4"></div>
+    </div>
+    <div id="loading-percent" class="font-mono-num text-[11px] text-amber-300 font-bold mt-2">ĐANG NẠP 35%...</div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       THREE.JS 3D SHOWROOM SCRIPT
+  ════════════════════════════════════════════════════════ -->
+  <script>
+    (function () {
+      'use strict';
+
+      // ──────────────────────────────────────────
+      // 1. SCENE, CAMERA & RENDERER SETUP
+      // ──────────────────────────────────────────
+      var container = document.getElementById('canvas-container');
+      var scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x050608);
+      scene.fog = new THREE.FogExp2(0x050608, 0.035);
+
+      var camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 100);
+      camera.position.set(4.2, 1.8, 5.2);
+
+      var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, preserveDrawingBuffer: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.05;
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      container.appendChild(renderer.domElement);
+
+      // Postprocessing UnrealBloomPass for LED headlights & diamond reflections
+      var composer = null;
+      var bloomPass = null;
+      if (typeof THREE.EffectComposer !== 'undefined' && typeof THREE.RenderPass !== 'undefined' && typeof THREE.UnrealBloomPass !== 'undefined') {
+        composer = new THREE.EffectComposer(renderer);
+        composer.addPass(new THREE.RenderPass(scene, camera));
+        bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.55, 0.4, 0.85);
+        composer.addPass(bloomPass);
+      }
+
+      // ──────────────────────────────────────────
+      // 2. ORBIT CONTROLS (Smooth 360 Rotation for Touch & Mouse)
+      // ──────────────────────────────────────────
+      var controls = null;
+      var orbitState = {
+        radius: 6.2,
+        theta: 0.85,
+        phi: 1.38,
+        target: new THREE.Vector3(0, 0.48, 0),
+        autoRotate: false,
+        autoRotateSpeed: 1.2
+      };
+
+      if (typeof THREE.OrbitControls !== 'undefined') {
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.minDistance = 2.0;
+        controls.maxDistance = 14.0;
+        controls.minPolarAngle = 0.08;
+        // Never look below the garage floor
+        controls.maxPolarAngle = Math.PI / 2 - 0.04;
+        controls.target.set(0, 0.48, 0);
+        controls.autoRotate = false;
+        controls.autoRotateSpeed = 1.6;
+      } else {
+        // Built-in touch & mouse orbit fallback
+        var isDown = false, startX = 0, startY = 0, sTheta = 0, sPhi = 0;
+        var initialPinchDist = null, initialRadius = orbitState.radius;
+
+        function updateFallbackCamera() {
+          camera.position.x = orbitState.target.x + orbitState.radius * Math.sin(orbitState.phi) * Math.sin(orbitState.theta);
+          camera.position.y = orbitState.target.y + orbitState.radius * Math.cos(orbitState.phi);
+          camera.position.z = orbitState.target.z + orbitState.radius * Math.sin(orbitState.phi) * Math.cos(orbitState.theta);
+          camera.lookAt(orbitState.target);
+        }
+
+        renderer.domElement.addEventListener('pointerdown', function (e) {
+          isDown = true;
+          startX = e.clientX;
+          startY = e.clientY;
+          sTheta = orbitState.theta;
+          sPhi = orbitState.phi;
+        });
+
+        window.addEventListener('pointermove', function (e) {
+          if (!isDown) return;
+          var dx = e.clientX - startX;
+          var dy = e.clientY - startY;
+          orbitState.theta = sTheta - dx * 0.006;
+          orbitState.phi = Math.max(0.1, Math.min(Math.PI / 2 - 0.04, sPhi - dy * 0.005));
+          updateFallbackCamera();
+        });
+
+        window.addEventListener('pointerup', function () { isDown = false; });
+        window.addEventListener('pointercancel', function () { isDown = false; });
+
+        // Wheel Zoom
+        renderer.domElement.addEventListener('wheel', function (e) {
+          e.preventDefault();
+          orbitState.radius = Math.max(2.0, Math.min(14.0, orbitState.radius + e.deltaY * 0.005));
+          updateFallbackCamera();
+        }, { passive: false });
+
+        // Touch Pinch Zoom
+        renderer.domElement.addEventListener('touchmove', function (e) {
+          if (e.touches && e.touches.length === 2) {
+            var dx = e.touches[0].clientX - e.touches[1].clientX;
+            var dy = e.touches[0].clientY - e.touches[1].clientY;
+            var dist = Math.hypot(dx, dy);
+            if (initialPinchDist === null) {
+              initialPinchDist = dist;
+              initialRadius = orbitState.radius;
+            } else {
+              var factor = initialPinchDist / dist;
+              orbitState.radius = Math.max(2.0, Math.min(14.0, initialRadius * factor));
+              updateFallbackCamera();
+            }
+          }
+        });
+        renderer.domElement.addEventListener('touchend', function () { initialPinchDist = null; });
+
+        controls = {
+          update: function () {
+            if (orbitState.autoRotate) {
+              orbitState.theta += 0.008;
+              updateFallbackCamera();
+            }
+          },
+          get autoRotate() { return orbitState.autoRotate; },
+          set autoRotate(v) { orbitState.autoRotate = v; },
+          target: orbitState.target
+        };
+        updateFallbackCamera();
+      }
+
+      // ──────────────────────────────────────────
+      // 3. GARAGE ENVIRONMENT & DIAMOND CEILING
+      // ──────────────────────────────────────────
+      // Reflective Luxury Floor
+      var floorGeo = new THREE.PlaneGeometry(60, 60);
+      var floorMat = new THREE.MeshStandardMaterial({
+        color: 0x0f1118,
+        metalness: 0.82,
+        roughness: 0.24
+      });
+      var floor = new THREE.Mesh(floorGeo, floorMat);
+      floor.rotation.x = -Math.PI / 2;
+      floor.receiveShadow = true;
+      scene.add(floor);
+
+      var floorGrid = new THREE.GridHelper(50, 50, 0x333b4f, 0x11131c);
+      floorGrid.position.y = 0.005;
+      scene.add(floorGrid);
+
+      // Diamond Grid Ceiling
+      var CEIL_HEIGHT = 7.5;
+      var DIAMOND_COLS = 12;
+      var DIAMOND_ROWS = 8;
+      var SPACING_X = 2.4;
+      var SPACING_Z = 2.4;
+
+      var ceilingGroup = new THREE.Group();
+      scene.add(ceilingGroup);
+
+      var diamondSegments = [];
+      for (var r = 0; r <= DIAMOND_ROWS; r++) {
+        for (var c = 0; c <= DIAMOND_COLS; c++) {
+          var cx = (c - DIAMOND_COLS / 2) * SPACING_X;
+          var cz = (r - DIAMOND_ROWS / 2) * SPACING_Z;
+          if (c < DIAMOND_COLS && r < DIAMOND_ROWS) {
+            diamondSegments.push(cx, CEIL_HEIGHT, cz, cx + SPACING_X, CEIL_HEIGHT, cz + SPACING_Z);
+          }
+          if (c > 0 && r < DIAMOND_ROWS) {
+            diamondSegments.push(cx, CEIL_HEIGHT, cz, cx - SPACING_X, CEIL_HEIGHT, cz + SPACING_Z);
+          }
+        }
+      }
+      var diamondLineGeo = new THREE.BufferGeometry();
+      diamondLineGeo.setAttribute('position', new THREE.Float32BufferAttribute(diamondSegments, 3));
+      var diamondMat = new THREE.LineBasicMaterial({ color: 0xffedd5, transparent: true, opacity: 0.85 });
+      var ceilingLines = new THREE.LineSegments(diamondLineGeo, diamondMat);
+      ceilingGroup.add(ceilingLines);
+
+      // Studio Lighting
+      var warmCeilingLight = new THREE.PointLight(0xffedd5, 0.7, 22, 1.8);
+      warmCeilingLight.position.set(0, CEIL_HEIGHT - 0.2, 0);
+      scene.add(warmCeilingLight);
+
+      var ambientLight = new THREE.AmbientLight(0x0c0f18, 0.9);
+      scene.add(ambientLight);
+
+      var keyLight = new THREE.SpotLight(0xfff7ed, 1.8, 30, Math.PI / 5, 0.5, 1.2);
+      keyLight.position.set(0, 7.0, 5.0);
+      keyLight.target.position.set(0, 0.5, 0);
+      keyLight.castShadow = true;
+      keyLight.shadow.mapSize.width = 2048;
+      keyLight.shadow.mapSize.height = 2048;
+      scene.add(keyLight);
+      scene.add(keyLight.target);
+
+      var rimLeft = new THREE.DirectionalLight(0x38bdf8, 1.0);
+      rimLeft.position.set(-8, 5, -4);
+      scene.add(rimLeft);
+
+      var rimRight = new THREE.DirectionalLight(0xd97706, 0.9);
+      rimRight.position.set(8, 5, -4);
+      scene.add(rimRight);
+
+      // Underglow Neon Light
+      var underglowLight = new THREE.PointLight(0xd4af37, 1.8, 7, 1.8);
+      underglowLight.position.set(0, 0.15, 0);
+      scene.add(underglowLight);
+
+      // ──────────────────────────────────────────
+      // 4. CAR MODEL ARCHITECTURE & MATERIALS
+      // ──────────────────────────────────────────
+      var carGroup = new THREE.Group();
+      scene.add(carGroup);
+
+      var bodyMaterials = [];
+      var headlightMaterials = [];
+      var caliperMeshes = [];
+      var activeDoorLeft = null;
+      var activeDoorRight = null;
+      var areDoorsOpen = false;
+      var areLightsOn = true;
+
+      // Base PBR Materials
+      var matBody = new THREE.MeshStandardMaterial({
+        color: 0x2e3036,
+        roughness: 0.48,
+        metalness: 0.42
+      });
+      bodyMaterials.push(matBody);
+
+      var matCarbon = new THREE.MeshStandardMaterial({
+        color: 0x0c0d10,
+        roughness: 0.32,
+        metalness: 0.55
+      });
+
+      var matGlass = new THREE.MeshStandardMaterial({
+        color: 0x111620,
+        roughness: 0.05,
+        metalness: 0.1,
+        transparent: true,
+        opacity: 0.48
+      });
+
+      var matCaliper = new THREE.MeshStandardMaterial({
+        color: 0xd4af37,
+        roughness: 0.25,
+        metalness: 0.85
+      });
+
+      var matYLED = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        emissive: new THREE.Color(0xffffff),
+        emissiveIntensity: 3.5,
+        roughness: 0.1
+      });
+      headlightMaterials.push(matYLED);
+
+      var matRim = new THREE.MeshStandardMaterial({
+        color: 0x090a0d,
+        roughness: 0.15,
+        metalness: 0.92
+      });
+
+      var matRubber = new THREE.MeshStandardMaterial({
+        color: 0x14151a,
+        roughness: 0.88,
+        metalness: 0.05
+      });
+
+      var matFlames = new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0 });
+
+      // Ground Shadow Plane
+      var shadowBlob = new THREE.Mesh(
+        new THREE.PlaneGeometry(2.6, 5.0),
+        new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.76 })
+      );
+      shadowBlob.rotation.x = -Math.PI / 2;
+      shadowBlob.position.y = 0.008;
+      carGroup.add(shadowBlob);
+
+      // Build Procedural High-Fidelity Lamborghini Aventador SV
+      function buildProceduralAventador() {
+        var pGroup = new THREE.Group();
+
+        function addBox(w, h, d, mat, x, y, z, rx, ry, rz, parent) {
+          var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+          m.position.set(x, y, z);
+          m.rotation.set(rx || 0, ry || 0, rz || 0);
+          m.castShadow = true;
+          m.receiveShadow = true;
+          (parent || pGroup).add(m);
+          return m;
+        }
+
+        // Chasis & sculpted body panels
+        addBox(2.05, 0.24, 4.4, matBody, 0, 0.22, 0);
+        addBox(1.92, 0.45, 3.8, matBody, 0, 0.48, -0.1);
+        addBox(1.68, 0.22, 1.45, matBody, 0, 0.46, 1.25, -0.18, 0, 0);
+        addBox(1.42, 0.48, 1.9, matBody, 0, 0.92, -0.15, -0.06, 0, 0);
+
+        // Windshield and tinted greenhouse glass
+        addBox(1.3, 0.48, 0.08, matGlass, 0, 0.88, 0.68, -0.68, 0, 0);
+        addBox(0.06, 0.32, 1.1, matGlass, -0.68, 0.86, -0.1);
+        addBox(0.06, 0.32, 1.1, matGlass, 0.68, 0.86, -0.1);
+
+        // Carbon Front Splitter & Aerovector Skirts
+        addBox(1.5, 0.12, 0.72, matCarbon, 0, 0.28, 1.95, -0.25, 0, 0);
+        addBox(2.1, 0.06, 0.42, matCarbon, 0, 0.1, 2.05);
+        addBox(0.12, 0.18, 3.6, matCarbon, -1.04, 0.16, 0);
+        addBox(0.12, 0.18, 3.6, matCarbon, 1.04, 0.16, 0);
+
+        // Engine Bonnet Louvers
+        for (var l = 0; l < 4; l++) {
+          addBox(1.15, 0.04, 0.2, matCarbon, 0, 0.78 - l * 0.04, -0.9 - l * 0.22, 0.35, 0, 0);
+        }
+
+        // Carbon Rear Diffuser & 4 Exhaust Pipes
+        addBox(1.95, 0.32, 0.8, matBody, 0, 0.46, -1.85, 0.12, 0, 0);
+        addBox(1.85, 0.14, 0.5, matCarbon, 0, 0.16, -2.15, 0.28, 0, 0);
+        for (var ex = -1; ex <= 2; ex++) {
+          var pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.05, 0.28, 12), new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.9, roughness: 0.2 }));
+          pipe.position.set((ex - 0.5) * 0.12, 0.38, -2.2);
+          pipe.rotation.x = Math.PI / 2;
+          pGroup.add(pipe);
+        }
+
+        // Exhaust backfire flames
+        var flL = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.45, 12), matFlames);
+        flL.rotation.x = -Math.PI / 2;
+        flL.position.set(-0.12, 0.38, -2.45);
+        pGroup.add(flL);
+
+        var flR = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.45, 12), matFlames);
+        flR.rotation.x = -Math.PI / 2;
+        flR.position.set(0.12, 0.38, -2.45);
+        pGroup.add(flR);
+
+        // Massive Fixed SV Carbon Wing
+        var wingG = new THREE.Group();
+        addBox(2.3, 0.05, 0.42, matCarbon, 0, 0, 0, 0.08, 0, 0, wingG);
+        addBox(0.05, 0.22, 0.46, matCarbon, -1.15, 0.04, 0, 0, 0, 0, wingG);
+        addBox(0.05, 0.22, 0.46, matCarbon, 1.15, 0.04, 0, 0, 0, 0, wingG);
+        addBox(0.06, 0.38, 0.12, matCarbon, -0.55, -0.18, -0.05, -0.18, 0, 0, wingG);
+        addBox(0.06, 0.38, 0.12, matCarbon, 0.55, -0.18, -0.05, -0.18, 0, 0, wingG);
+        wingG.position.set(0, 1.18, -1.82);
+        pGroup.add(wingG);
+
+        // Y-LED Headlights
+        function buildY(side) {
+          var yg = new THREE.Group();
+          addBox(0.035, 0.03, 0.22, matYLED, 0, 0, 0, 0, 0, 0, yg);
+          addBox(0.14, 0.03, 0.035, matYLED, -0.06, 0, 0.09, 0, 0.55, 0, yg);
+          addBox(0.14, 0.03, 0.035, matYLED, 0.06, 0, 0.09, 0, -0.55, 0, yg);
+          yg.position.set(side * 0.68, 0.48, 1.68);
+          yg.rotation.set(-0.25, side * 0.18, 0);
+          pGroup.add(yg);
+        }
+        buildY(-1);
+        buildY(1);
+
+        // Scissor Doors Hinges
+        var doorL = new THREE.Group();
+        doorL.position.set(-1.02, 0.4, 0.65);
+        pGroup.add(doorL);
+
+        var doorR = new THREE.Group();
+        doorR.position.set(1.02, 0.4, 0.65);
+        pGroup.add(doorR);
+
+        var doorMeshL = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.62, 1.5), matBody);
+        doorMeshL.position.set(0, 0.15, -0.65);
+        doorL.add(doorMeshL);
+
+        var doorMeshR = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.62, 1.5), matBody);
+        doorMeshR.position.set(0, 0.15, -0.65);
+        doorR.add(doorMeshR);
+
+        activeDoorLeft = doorL;
+        activeDoorRight = doorR;
+
+        // 4 Forged Wheels with Brake Calipers
+        function buildWheel(x, z, r) {
+          var wg = new THREE.Group();
+          wg.position.set(x, r, z);
+
+          var tire = new THREE.Mesh(new THREE.TorusGeometry(r * 0.88, 0.15, 18, 32), matRubber);
+          tire.rotation.y = Math.PI / 2;
+          tire.castShadow = true;
+          wg.add(tire);
+
+          var rim = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.72, r * 0.72, 0.28, 12), matRim);
+          rim.rotation.z = Math.PI / 2;
+          wg.add(rim);
+
+          // Caliper
+          var cal = new THREE.Mesh(new THREE.BoxGeometry(0.08, r * 0.42, 0.18), matCaliper);
+          cal.position.set(x > 0 ? -0.06 : 0.06, r * 0.28, 0);
+          wg.add(cal);
+          caliperMeshes.push(cal);
+
+          pGroup.add(wg);
+        }
+        buildWheel(-1.05, 1.45, 0.42);
+        buildWheel(1.05, 1.45, 0.42);
+        buildWheel(-1.08, -1.35, 0.46);
+        buildWheel(1.08, -1.35, 0.46);
+
+        return pGroup;
+      }
+
+      var currentModelGroup = buildProceduralAventador();
+      carGroup.add(currentModelGroup);
+
+      // ──────────────────────────────────────────
+      // 5. GLTF LOADER FOR AVENTADOR.GLB
+      // ──────────────────────────────────────────
+      var gltfLoader = (typeof THREE.GLTFLoader !== 'undefined') ? new THREE.GLTFLoader() : null;
+
+      function applyLoadedModel(loadedScene) {
+        if (currentModelGroup) {
+          carGroup.remove(currentModelGroup);
+        }
+        bodyMaterials = [];
+        headlightMaterials = [];
+        caliperMeshes = [];
+        activeDoorLeft = null;
+        activeDoorRight = null;
+
+        var wrapper = new THREE.Group();
+        loadedScene.rotation.y = Math.PI / 2;
+        wrapper.add(loadedScene);
+
+        var box = new THREE.Box3().setFromObject(wrapper);
+        var size = new THREE.Vector3();
+        box.getSize(size);
+        var targetLength = 4.8;
+        var maxDim = Math.max(size.x, size.z);
+        var scale = targetLength / maxDim;
+        wrapper.scale.set(scale, scale, scale);
+
+        box.setFromObject(wrapper);
+        var center = new THREE.Vector3();
+        box.getCenter(center);
+        wrapper.position.x = -center.x;
+        wrapper.position.z = -center.z;
+        wrapper.position.y = -box.min.y;
+
+        wrapper.traverse(function (child) {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            var mName = (child.material && child.material.name) ? child.material.name : '';
+
+            if (mName === 'Mt_Body' || mName === 'Mt_MirrorCover' || mName.indexOf('Body') !== -1) {
+              child.material.roughness = 0.48;
+              child.material.metalness = 0.42;
+              child.material.color.setHex(0x2e3036);
+              child.material.needsUpdate = true;
+              bodyMaterials.push(child.material);
+            }
+            if (mName === 'Mt_BrakeCaliper' || mName.indexOf('Caliper') !== -1) {
+              child.material.color.setHex(0xd4af37);
+              child.material.metalness = 0.85;
+              child.material.roughness = 0.25;
+              caliperMeshes.push(child);
+            }
+            if (mName === 'Mt_Light_Emissive' || mName.indexOf('Light') !== -1 || mName.indexOf('Emissive') !== -1) {
+              child.material.emissive = new THREE.Color(0xffffff);
+              child.material.emissiveIntensity = 3.5;
+              headlightMaterials.push(child.material);
+            }
+            if (mName === 'Mt_WindScreens' || mName === 'Mt_Glass_Translucent') {
+              child.material.transparent = true;
+              child.material.opacity = 0.45;
+              child.material.roughness = 0.05;
+              child.material.metalness = 0.1;
+            }
+          }
+
+          var nName = (child.name || '').toLowerCase();
+          if (nName.indexOf('door') !== -1 && (nName.indexOf('l') !== -1 || nName.indexOf('left') !== -1)) {
+            activeDoorLeft = child;
+          }
+          if (nName.indexOf('door') !== -1 && (nName.indexOf('r') !== -1 || nName.indexOf('right') !== -1)) {
+            activeDoorRight = child;
+          }
+        });
+
+        currentModelGroup = wrapper;
+        carGroup.add(wrapper);
+      }
+
+      // Try loading ./assets/aventador.glb
+      var loadingOverlay = document.getElementById('loader-overlay');
+      var loadingFill = document.getElementById('loading-bar-fill');
+      var loadingPct = document.getElementById('loading-percent');
+
+      function hideLoader() {
+        if (loadingOverlay) {
+          loadingOverlay.style.opacity = '0';
+          setTimeout(function () {
+            loadingOverlay.style.display = 'none';
+          }, 700);
+        }
+      }
+
+      if (gltfLoader) {
+        gltfLoader.load('./assets/aventador.glb', function (gltf) {
+          applyLoadedModel(gltf.scene);
+          if (loadingFill) loadingFill.style.width = '100%';
+          if (loadingPct) loadingPct.textContent = 'HOÀN TẤT 100%!';
+          setTimeout(hideLoader, 400);
+        }, function (xhr) {
+          if (xhr.lengthComputable && xhr.total > 0) {
+            var p = Math.round((xhr.loaded / xhr.total) * 100);
+            if (loadingFill) loadingFill.style.width = p + '%';
+            if (loadingPct) loadingPct.textContent = 'ĐANG NẠP ' + p + '%...';
+          }
+        }, function (err) {
+          console.log('Procedural fallback in use:', err);
+          if (loadingFill) loadingFill.style.width = '100%';
+          if (loadingPct) loadingPct.textContent = 'MÔ HÌNH SV ĐÃ SẴN SÀNG!';
+          setTimeout(hideLoader, 500);
+        });
+      } else {
+        setTimeout(hideLoader, 500);
+      }
+
+      // File input picker for custom .glb
+      var fileInput = document.getElementById('file-model-input');
+      if (fileInput) {
+        fileInput.addEventListener('change', function () {
+          if (fileInput.files && fileInput.files.length > 0 && gltfLoader) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+              gltfLoader.parse(e.target.result, '', function (gltf) {
+                applyLoadedModel(gltf.scene);
+              });
+            };
+            reader.readAsArrayBuffer(fileInput.files[0]);
+          }
+        });
+      }
+
+      // ──────────────────────────────────────────
+      // 6. INTERACTIVE 3D HOTSPOTS SYSTEM
+      // ──────────────────────────────────────────
+      var hotspots = [
+        {
+          id: 'v12-engine',
+          name: 'ĐỘNG CƠ V12 6.5L',
+          category: 'TRÁI TIM SỨC MẠNH',
+          position: new THREE.Vector3(0, 0.85, -0.9),
+          cameraTarget: { pos: [0, 2.0, -2.8], target: [0, 0.7, -0.9] },
+          desc: 'Khối động cơ V12 6.5L nạp khí tự nhiên đặt giữa, tinh chỉnh sản sinh 750 mã lực tại 8.400 vòng/phút. Tiếng gầm đặc trưng xé toạc không gian!',
+          stats: [{ label: 'CÔNG SUẤT', val: '750 HP' }, { label: 'VÒNG TUA', val: '8.400 RPM' }]
+        },
+        {
+          id: 'scissor-doors',
+          name: 'CỬA CẮT KÉO SCISSOR DOORS',
+          category: 'THIẾT KẾ HUYỀN THOẠI',
+          position: new THREE.Vector3(-1.08, 0.75, 0.2),
+          cameraTarget: { pos: [-3.4, 1.4, 0.4], target: [-0.8, 0.6, 0.2] },
+          desc: 'Biểu tượng kinh điển của siêu bò Lamborghini. Mở hướng chếch lên 65° với bản lề trợ lực thủy lực siêu nhẹ bọc sợi Carbon.',
+          stats: [{ label: 'GÓC MỞ', val: '65°' }, { label: 'VẬT LIỆU', val: 'FORGED CARBON' }]
+        },
+        {
+          id: 'rear-wing',
+          name: 'CÁNH GIÓ SV CARBON AERO',
+          category: 'KHÍ ĐỘNG HỌC ĐUA',
+          position: new THREE.Vector3(0, 1.25, -1.82),
+          cameraTarget: { pos: [0, 1.9, -3.8], target: [0, 1.0, -1.8] },
+          desc: 'Cánh lướt gió sợi carbon cỡ lớn SV tăng 170% lực ép mặt đường (downforce) so với bản tiêu chuẩn, tối ưu độ bám cua ở tốc độ trên 300 km/h.',
+          stats: [{ label: 'DOWNFORCE', val: '+170%' }, { label: 'VẬT LIỆU', val: 'CFRP MATTE' }]
+        },
+        {
+          id: 'ceramic-brakes',
+          name: 'PHANH GỐM CARBON CERAMIC',
+          category: 'HIỆU SUẤT DỪNG SIÊU ĐẲNG',
+          position: new THREE.Vector3(-1.08, 0.42, 1.45),
+          cameraTarget: { pos: [-2.4, 0.6, 1.9], target: [-1.0, 0.4, 1.4] },
+          desc: 'Đĩa phanh gốm Carbon Ceramic chịu nhiệt trên 1.000°C cùng cùm phanh 6-piston sơn mạ Gold Luxury độc quyền Đinh Hữu Phước.',
+          stats: [{ label: 'ĐƯỜNG KÍNH', val: '400 MM' }, { label: 'CÙM PHANH', val: '6-PISTON GOLD' }]
+        },
+        {
+          id: 'y-headlights',
+          name: 'ĐÈN PHA FULL LED CHỮ Y',
+          category: 'ĐỒ HỌA CHIẾU SÁNG',
+          position: new THREE.Vector3(0.68, 0.52, 1.75),
+          cameraTarget: { pos: [1.8, 0.9, 3.2], target: [0.6, 0.5, 1.7] },
+          desc: 'Dải đèn LED định vị ban ngày lấy cảm hứng từ máy bay tàng hình, đồ họa chữ Y sắc lẹm mang bản sắc DNA siêu xe Sant’Agata Bolognese.',
+          stats: [{ label: 'CÔNG NGHỆ', val: 'FULL MATRIX LED' }, { label: 'BẢN SẮC', val: 'Y-SHAPE DNA' }]
+        }
+      ];
+
+      var hotspotsContainer = document.getElementById('hotspots-container');
+      var hotspotDoms = [];
+
+      hotspots.forEach(function (h) {
+        var el = document.createElement('div');
+        el.className = 'hotspot-pin';
+        el.innerHTML = '<div class="hotspot-ring"></div><div class="hotspot-core"></div>';
+        el.title = h.name;
+        el.addEventListener('click', function (e) {
+          e.stopPropagation();
+          openHotspotModal(h);
+        });
+        hotspotsContainer.appendChild(el);
+        hotspotDoms.push({ data: h, element: el });
+      });
+
+      function updateHotspotsScreenCoords() {
+        if (!hotspotsContainer || hotspotsContainer.style.display === 'none') return;
+        var tempV = new THREE.Vector3();
+        hotspotDoms.forEach(function (item) {
+          tempV.copy(item.data.position);
+          tempV.project(camera);
+
+          // Check if behind camera
+          if (tempV.z > 1) {
+            item.element.style.display = 'none';
+            return;
+          }
+          var x = (tempV.x * 0.5 + 0.5) * window.innerWidth;
+          var y = (-(tempV.y * 0.5) + 0.5) * window.innerHeight;
+          item.element.style.display = 'flex';
+          item.element.style.left = x + 'px';
+          item.element.style.top = y + 'px';
+        });
+      }
+
+      window.openHotspotModal = function (h) {
+        document.getElementById('hotspot-category').textContent = h.category;
+        document.getElementById('hotspot-title').textContent = h.name;
+        document.getElementById('hotspot-desc').textContent = h.desc;
+
+        var statsContainer = document.getElementById('hotspot-stats');
+        statsContainer.innerHTML = '';
+        h.stats.forEach(function (s) {
+          var div = document.createElement('div');
+          div.className = 'glass-hud p-2 rounded-xl text-center';
+          div.innerHTML = '<div class="font-mono-num text-[9px] text-white/50 uppercase">' + s.label + '</div><div class="font-display font-black text-amber-300 text-base">' + s.val + '</div>';
+          statsContainer.appendChild(div);
+        });
+
+        var modal = document.getElementById('hotspot-modal');
+        var card = document.getElementById('hotspot-modal-card');
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        modal.classList.add('opacity-100');
+        card.classList.remove('scale-95');
+        card.classList.add('scale-100');
+
+        // Animate camera to focus on this feature
+        if (typeof gsap !== 'undefined' && h.cameraTarget && controls) {
+          controls.autoRotate = false;
+          gsap.to(camera.position, {
+            x: h.cameraTarget.pos[0],
+            y: h.cameraTarget.pos[1],
+            z: h.cameraTarget.pos[2],
+            duration: 1.4,
+            ease: 'power3.inOut'
+          });
+          gsap.to(controls.target, {
+            x: h.cameraTarget.target[0],
+            y: h.cameraTarget.target[1],
+            z: h.cameraTarget.target[2],
+            duration: 1.4,
+            ease: 'power3.inOut'
+          });
+        }
+      };
+
+      window.closeHotspotModal = function () {
+        var modal = document.getElementById('hotspot-modal');
+        var card = document.getElementById('hotspot-modal-card');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        modal.classList.remove('opacity-100');
+        card.classList.add('scale-95');
+        card.classList.remove('scale-100');
+      };
+
+      var areHotspotsVisible = true;
+      window.toggleHotspotsVisibility = function () {
+        areHotspotsVisible = !areHotspotsVisible;
+        hotspotsContainer.style.display = areHotspotsVisible ? 'block' : 'none';
+        var btn = document.getElementById('btn-toggle-hotspots');
+        if (btn) btn.classList.toggle('glass-gold-active', areHotspotsVisible);
+      };
+
+      // ──────────────────────────────────────────
+      // 7. CAMERA PRESETS CONTROLLER
+      // ──────────────────────────────────────────
+      var cameraPresets = {
+        hero:    { pos: [4.2, 1.8, 5.2],  target: [0, 0.48, 0] },
+        front:   { pos: [0, 0.75, 4.2],   target: [0, 0.38, 1.2] },
+        side:    { pos: [-5.4, 1.4, 0.2], target: [0, 0.45, 0] },
+        rear:    { pos: [0, 1.4, -5.2],   target: [0, 0.65, -1.0] },
+        top:     { pos: [0, 6.8, 0.1],    target: [0, 0, 0] },
+        cockpit: { pos: [-0.4, 1.15, 0.1], target: [0, 0.75, 0.4] },
+        wheel:   { pos: [-2.2, 0.6, 1.8], target: [-1.05, 0.42, 1.45] }
+      };
+
+      window.setCameraPreset = function (name) {
+        var p = cameraPresets[name] || cameraPresets.hero;
+        if (controls) controls.autoRotate = false;
+
+        document.querySelectorAll('.cam-chip').forEach(function (btn) {
+          btn.classList.remove('active', 'glass-gold-active', 'border-amber-400', 'text-amber-300');
+          btn.classList.add('glass-hud', 'border-white/5', 'text-white/70');
+        });
+        if (window.event && window.event.currentTarget) {
+          window.event.currentTarget.classList.add('active', 'glass-gold-active', 'border-amber-400', 'text-amber-300');
+          window.event.currentTarget.classList.remove('glass-hud', 'border-white/5', 'text-white/70');
+        }
+
+        if (typeof gsap !== 'undefined') {
+          gsap.to(camera.position, {
+            x: p.pos[0],
+            y: p.pos[1],
+            z: p.pos[2],
+            duration: 1.3,
+            ease: 'power3.inOut'
+          });
+          if (controls) {
+            gsap.to(controls.target, {
+              x: p.target[0],
+              y: p.target[1],
+              z: p.target[2],
+              duration: 1.3,
+              ease: 'power3.inOut'
+            });
+          }
+        } else {
+          camera.position.set(p.pos[0], p.pos[1], p.pos[2]);
+          if (controls) controls.target.set(p.target[0], p.target[1], p.target[2]);
+        }
+
+        if (typeof orbitState !== 'undefined') {
+          orbitState.target.set(p.target[0], p.target[1], p.target[2]);
+          var odx = p.pos[0] - p.target[0];
+          var ody = p.pos[1] - p.target[1];
+          var odz = p.pos[2] - p.target[2];
+          orbitState.radius = Math.hypot(odx, ody, odz);
+          orbitState.phi = Math.acos(ody / orbitState.radius);
+          orbitState.theta = Math.atan2(odx, odz);
+        }
+      };
+
+      // ──────────────────────────────────────────
+      // 8. CUSTOMIZER: PAINT, FINISH, CALIPERS
+      // ──────────────────────────────────────────
+      window.setPaintColor = function (hex, name, roughness, metalness) {
+        bodyMaterials.forEach(function (mat) {
+          if (mat.color) mat.color.setHex(hex);
+          if (roughness !== undefined) mat.roughness = roughness;
+          if (metalness !== undefined) mat.metalness = metalness;
+          mat.needsUpdate = true;
+        });
+
+        var nameDisp = document.getElementById('current-paint-name');
+        if (nameDisp) nameDisp.textContent = name;
+
+        document.querySelectorAll('.paint-swatch').forEach(function (sw) {
+          sw.classList.remove('active', 'border-2', 'border-amber-400', 'scale-115');
+          sw.classList.add('border', 'border-white/20');
+        });
+        if (window.event && window.event.currentTarget) {
+          window.event.currentTarget.classList.add('active', 'border-2', 'border-amber-400', 'scale-115');
+          window.event.currentTarget.classList.remove('border-white/20');
+        }
+      };
+
+      window.setPaintFinish = function (type) {
+        var r = 0.48, m = 0.42;
+        if (type === 'gloss') { r = 0.14; m = 0.65; }
+        else if (type === 'metallic') { r = 0.26; m = 0.88; }
+
+        bodyMaterials.forEach(function (mat) {
+          mat.roughness = r;
+          mat.metalness = m;
+          mat.needsUpdate = true;
+        });
+
+        document.querySelectorAll('.finish-btn').forEach(function (b) {
+          b.classList.remove('active', 'glass-gold-active', 'border-amber-400', 'text-amber-300');
+          b.classList.add('glass-hud', 'text-white/70');
+        });
+        if (window.event && window.event.currentTarget) {
+          window.event.currentTarget.classList.add('active', 'glass-gold-active', 'border-amber-400', 'text-amber-300');
+          window.event.currentTarget.classList.remove('glass-hud', 'text-white/70');
+        }
+      };
+
+      window.setCaliperColor = function (hex) {
+        matCaliper.color.setHex(hex);
+        caliperMeshes.forEach(function (c) {
+          if (c.material && c.material.color) c.material.color.setHex(hex);
+        });
+      };
+
+      // ──────────────────────────────────────────
+      // 9. SCISSOR DOORS & LIGHTS CONTROLS
+      // ──────────────────────────────────────────
+      window.toggleDoors = function () {
+        areDoorsOpen = !areDoorsOpen;
+        var btn = document.getElementById('btn-dock-doors');
+        var lbl = document.getElementById('label-dock-doors');
+        if (lbl) lbl.textContent = areDoorsOpen ? 'ĐÓNG CỬA CẮT KÉO' : 'MỞ CỬA CẮT KÉO';
+        if (btn) btn.classList.toggle('glass-gold-active', areDoorsOpen);
+
+        var rx = areDoorsOpen ? -1.18 : 0;
+        var rzL = areDoorsOpen ? 0.24 : 0;
+        var rzR = areDoorsOpen ? -0.24 : 0;
+
+        if (typeof gsap !== 'undefined') {
+          if (activeDoorLeft) gsap.to(activeDoorLeft.rotation, { x: rx, z: rzL, duration: 1.3, ease: 'power3.out' });
+          if (activeDoorRight) gsap.to(activeDoorRight.rotation, { x: rx, z: rzR, duration: 1.3, ease: 'power3.out' });
+        } else {
+          if (activeDoorLeft) activeDoorLeft.rotation.set(rx, 0, rzL);
+          if (activeDoorRight) activeDoorRight.rotation.set(rx, 0, rzR);
+        }
+      };
+
+      window.toggleHeadlights = function () {
+        areLightsOn = !areLightsOn;
+        var btn = document.getElementById('btn-dock-lights');
+        var lbl = document.getElementById('label-dock-lights');
+        if (lbl) lbl.textContent = areLightsOn ? 'TẮT ĐÈN PHA Y-LED' : 'BẬT ĐÈN PHA Y-LED';
+        if (btn) btn.classList.toggle('glass-gold-active', areLightsOn);
+
+        headlightMaterials.forEach(function (mat) {
+          mat.emissiveIntensity = areLightsOn ? 3.5 : 0.1;
+          mat.color.setHex(areLightsOn ? 0xffffff : 0x475569);
+        });
+        if (bloomPass) {
+          bloomPass.strength = areLightsOn ? 0.55 : 0.25;
+        }
+      };
+
+      var isWireframe = false;
+      window.toggleWireframe = function () {
+        isWireframe = !isWireframe;
+        var btn = document.getElementById('btn-dock-wireframe');
+        var lbl = document.getElementById('label-dock-wireframe');
+        if (lbl) lbl.textContent = isWireframe ? 'TẮT X-RAY (LƯỚI)' : 'CHẾ ĐỘ X-RAY (LƯỚI)';
+        if (btn) btn.classList.toggle('glass-gold-active', isWireframe);
+
+        carGroup.traverse(function (child) {
+          if (child.isMesh && child.material) {
+            child.material.wireframe = isWireframe;
+          }
+        });
+      };
+
+      // ──────────────────────────────────────────
+      // 10. STUDIO ENVIRONMENT & UNDERGLOW NEON
+      // ──────────────────────────────────────────
+      window.setStudioEnvironment = function (mode) {
+        document.querySelectorAll('.studio-btn').forEach(function (b) {
+          b.classList.remove('active', 'glass-gold-active', 'border-amber-400');
+          b.classList.add('glass-hud', 'border-white/10');
+        });
+        if (window.event && window.event.currentTarget) {
+          window.event.currentTarget.classList.add('active', 'glass-gold-active', 'border-amber-400');
+          window.event.currentTarget.classList.remove('glass-hud', 'border-white/10');
+        }
+
+        if (mode === 'vault') {
+          scene.background.setHex(0x050608);
+          ceilingGroup.visible = true;
+          warmCeilingLight.intensity = 0.7;
+          rimLeft.color.setHex(0x38bdf8);
+          rimRight.color.setHex(0xd97706);
+          keyLight.intensity = 1.8;
+        } else if (mode === 'cyberpunk') {
+          scene.background.setHex(0x04030a);
+          ceilingGroup.visible = false;
+          warmCeilingLight.intensity = 0.2;
+          rimLeft.color.setHex(0xec4899);
+          rimRight.color.setHex(0x3b82f6);
+          keyLight.intensity = 1.2;
+        } else if (mode === 'clean') {
+          scene.background.setHex(0x1a1d26);
+          ceilingGroup.visible = false;
+          warmCeilingLight.intensity = 1.2;
+          rimLeft.color.setHex(0xffffff);
+          rimRight.color.setHex(0xffffff);
+          keyLight.intensity = 2.4;
+        } else if (mode === 'sunset') {
+          scene.background.setHex(0x12080a);
+          ceilingGroup.visible = false;
+          warmCeilingLight.intensity = 0.5;
+          rimLeft.color.setHex(0xf97316);
+          rimRight.color.setHex(0xfacc15);
+          keyLight.intensity = 1.6;
+        }
+      };
+
+      window.setUnderglowColor = function (hex) {
+        if (hex === 0x000000) {
+          underglowLight.intensity = 0;
+        } else {
+          underglowLight.color.setHex(hex);
+          underglowLight.intensity = 2.2;
+        }
+      };
+
+      // ──────────────────────────────────────────
+      // 11. WEB AUDIO API SYNTHESIZER (V12 Sound)
+      // ──────────────────────────────────────────
+      var audioCtx = null;
+      var idleOsc1 = null, idleOsc2 = null, idleGain = null;
+      var isEngineOn = false;
+
+      function initAudio() {
+        if (!audioCtx) {
+          var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) audioCtx = new AudioContextClass();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      }
+
+      window.toggleEngineSound = function () {
+        initAudio();
+        if (!audioCtx) return;
+        isEngineOn = !isEngineOn;
+
+        var stText = document.getElementById('engine-start-text');
+        var btn = document.getElementById('btn-sound-start');
+
+        if (isEngineOn) {
+          if (stText) stText.textContent = 'DỪNG ĐỘNG CƠ (STOP V12)';
+          if (btn) btn.classList.add('glass-gold-active', 'border-amber-400');
+
+          // Play ignition burst
+          playRevBurst(true);
+
+          // Start continuous low idle drone
+          idleGain = audioCtx.createGain();
+          idleGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+          idleGain.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 0.8);
+          idleGain.connect(audioCtx.destination);
+
+          idleOsc1 = audioCtx.createOscillator();
+          idleOsc1.type = 'sawtooth';
+          idleOsc1.frequency.setValueAtTime(45, audioCtx.currentTime);
+          idleOsc1.connect(idleGain);
+          idleOsc1.start();
+
+          idleOsc2 = audioCtx.createOscillator();
+          idleOsc2.type = 'triangle';
+          idleOsc2.frequency.setValueAtTime(90, audioCtx.currentTime);
+          idleOsc2.connect(idleGain);
+          idleOsc2.start();
+        } else {
+          if (stText) stText.textContent = 'KHỞI ĐỘNG ĐỘNG CƠ (IGNITION)';
+          if (btn) btn.classList.remove('glass-gold-active', 'border-amber-400');
+          if (idleGain) {
+            idleGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.3);
+            setTimeout(function () {
+              if (idleOsc1) idleOsc1.stop();
+              if (idleOsc2) idleOsc2.stop();
+            }, 350);
+          }
+        }
+      };
+
+      function playRevBurst(isIgnition) {
+        initAudio();
+        if (!audioCtx) return;
+        var now = audioCtx.currentTime;
+        var dur = isIgnition ? 2.2 : 2.8;
+
+        var g = audioCtx.createGain();
+        g.gain.setValueAtTime(0.001, now);
+        g.gain.exponentialRampToValueAtTime(0.35, now + 0.3);
+        g.gain.linearRampToValueAtTime(0.18, now + 1.2);
+        g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+        g.connect(audioCtx.destination);
+
+        var freqs = [70, 105, 140, 210, 280];
+        freqs.forEach(function (f) {
+          var osc = audioCtx.createOscillator();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(f, now);
+          osc.frequency.exponentialRampToValueAtTime(f * 2.8, now + 0.6);
+          osc.frequency.exponentialRampToValueAtTime(f * 0.95, now + dur);
+          osc.connect(g);
+          osc.start(now);
+          osc.stop(now + dur);
+        });
+
+        // Flame animation and car chassis vibration
+        if (typeof gsap !== 'undefined') {
+          gsap.to(matFlames, { opacity: 0.95, duration: 0.12, yoyo: true, repeat: 5, onComplete: function () { matFlames.opacity = 0; } });
+          gsap.fromTo(carGroup.position, { y: -0.012 }, { y: 0.012, duration: 0.04, repeat: 12, yoyo: true, ease: 'none', onComplete: function () { carGroup.position.y = 0; } });
+        }
+      }
+
+      window.revEngineSound = function () {
+        playRevBurst(false);
+      };
+
+      // ──────────────────────────────────────────
+      // 12. UI CONTROLLER (Tabs, Drawer, Snapshot, Hide UI)
+      // ──────────────────────────────────────────
+      window.switchTab = function (tabName) {
+        document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.add('hidden'); });
+        document.querySelectorAll('.tab-pill').forEach(function (b) {
+          b.classList.remove('active', 'glass-gold-active', 'border-amber-400', 'text-amber-300');
+          b.classList.add('glass-hud', 'border-white/5', 'text-white/70');
+        });
+
+        var panel = document.getElementById('tab-panel-' + tabName);
+        if (panel) panel.classList.remove('hidden');
+
+        if (window.event && window.event.currentTarget) {
+          window.event.currentTarget.classList.add('active', 'glass-gold-active', 'border-amber-400', 'text-amber-300');
+          window.event.currentTarget.classList.remove('glass-hud', 'border-white/5', 'text-white/70');
+        }
+
+        // Ensure drawer is open
+        var drawer = document.getElementById('dock-drawer');
+        if (drawer && drawer.classList.contains('hidden')) {
+          drawer.classList.remove('hidden');
+          document.getElementById('drawer-toggle-icon').classList.remove('rotate-180');
+        }
+      };
+
+      window.toggleDockDrawer = function () {
+        var drawer = document.getElementById('dock-drawer');
+        var icon = document.getElementById('drawer-toggle-icon');
+        if (drawer) {
+          var isHidden = drawer.classList.toggle('hidden');
+          if (icon) icon.classList.toggle('rotate-180', isHidden);
+        }
+      };
+
+      window.toggleAutoRotate = function () {
+        if (!controls) return;
+        controls.autoRotate = !controls.autoRotate;
+        var btn = document.getElementById('btn-toggle-auto-rot');
+        var icon = document.getElementById('icon-rot');
+        if (btn) btn.classList.toggle('glass-gold-active', controls.autoRotate);
+        if (icon) icon.classList.toggle('animate-spin', controls.autoRotate);
+      };
+
+      window.toggleHideUI = function (hide) {
+        if (hide) {
+          document.body.classList.add('hide-ui');
+        } else {
+          document.body.classList.remove('hide-ui');
+        }
+      };
+
+      window.toggleFullscreen = function () {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(function () {});
+        } else {
+          document.exitFullscreen().catch(function () {});
+        }
+      };
+
+      window.takeSnapshot4K = function () {
+        // Hide UI momentarily for pristine capture
+        document.body.classList.add('hide-ui');
+        setTimeout(function () {
+          renderer.render(scene, camera);
+          var dataURL = renderer.domElement.toDataURL('image/png');
+          var link = document.createElement('a');
+          link.download = 'Dinh_Huu_Phuoc_Aventador_SV_360.png';
+          link.href = dataURL;
+          link.click();
+          document.body.classList.remove('hide-ui');
+        }, 150);
+      };
+
+      // ──────────────────────────────────────────
+      // 13. KEYBOARD SHORTCUTS (Laptop / Desktop)
+      // ──────────────────────────────────────────
+      window.addEventListener('keydown', function (e) {
+        if (e.target.tagName === 'INPUT') return;
+        if (e.code === 'Space') {
+          e.preventDefault();
+          revEngineSound();
+        } else if (e.code === 'KeyR') {
+          toggleAutoRotate();
+        } else if (e.code === 'KeyD') {
+          toggleDoors();
+        } else if (e.code === 'KeyL') {
+          toggleHeadlights();
+        } else if (e.code === 'KeyH') {
+          toggleHideUI(!document.body.classList.contains('hide-ui'));
+        } else if (e.code === 'KeyF') {
+          toggleFullscreen();
+        } else if (e.key >= '1' && e.key <= '7') {
+          var pNames = ['hero', 'front', 'side', 'rear', 'top', 'cockpit', 'wheel'];
+          var idx = parseInt(e.key) - 1;
+          if (pNames[idx]) setCameraPreset(pNames[idx]);
+        }
+      });
+
+      // ──────────────────────────────────────────
+      // 14. RESIZE HANDLER (Mobile, iPad, Laptop)
+      // ──────────────────────────────────────────
+      function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        if (composer) composer.setSize(window.innerWidth, window.innerHeight);
+      }
+      window.addEventListener('resize', onWindowResize);
+      window.addEventListener('orientationchange', function () {
+        setTimeout(onWindowResize, 150);
+      });
+
+      // ──────────────────────────────────────────
+      // 15. MAIN ANIMATION LOOP
+      // ──────────────────────────────────────────
+      var clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        var delta = clock.getDelta();
+
+        if (controls) controls.update();
+        updateHotspotsScreenCoords();
+
+        if (composer) {
+          composer.render();
+        } else {
+          renderer.render(scene, camera);
+        }
+      }
+      animate();
+
+      // Start with doors open for dramatic showroom intro
+      setTimeout(function () {
+        toggleDoors();
+      }, 1200);
+
+    })();
+  </script>
+</body>
+</html>

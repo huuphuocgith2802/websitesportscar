@@ -1,0 +1,2320 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ĐINH HỮU PHƯỚC — Private Supercar Garage | Lamborghini Aventador SV</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Luxury Automotive Outfit + Plus Jakarta Sans + Montserrat + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Montserrat:wght@700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+  <!-- Three.js r128 (Ultra-stable global UMD) -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <!-- Three.js Postprocessing & GLTF Loader -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+  <!-- GSAP 3.12 + ScrollTrigger -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
+  <!-- Lenis Smooth Scroll -->
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+  <style>
+    :root {
+      --gold: #d4af37;
+      --gold-bright: #fff2c2;
+      --gold-dark: #8a6d1c;
+      --bg-dark: #06070a;
+      --ceiling-warm: #fff3d6;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      background: var(--bg-dark);
+      color: #fff;
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      overflow-x: hidden;
+      scroll-behavior: auto !important;
+    }
+
+    /* 3D WebGL Canvas */
+    #webgl-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+    #webgl-container canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+      pointer-events: auto;
+      cursor: grab;
+    }
+    #webgl-container canvas:active {
+      cursor: grabbing;
+    }
+
+    /* Scrollable HTML Layer */
+    #scroll-container {
+      position: relative;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    /* Modern Luxury Supercar Typography */
+    .font-display {
+      font-family: 'Outfit', 'Montserrat', -apple-system, sans-serif;
+      letter-spacing: -0.015em;
+    }
+    .font-body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      line-height: 1.65;
+    }
+    .font-mono-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-feature-settings: "tnum";
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Luxury Metallic Liquid Gold Gradient with Ambient Glow */
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #fce28b 0%, #fff6d9 26%, #d4af37 54%, #eab33a 78%, #a0781e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 14px rgba(212, 175, 55, 0.28));
+    }
+    .gold-gradient-subtle {
+      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 40%, #fde68a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Glowing Rotating Shimmer Ring for Owner Avatar */
+    .owner-avatar-ring {
+      background: linear-gradient(135deg, #d4af37, #fef08a, #b45309, #d4af37);
+      background-size: 300% 300%;
+      animation: goldShimmer 4s ease infinite;
+    }
+    @keyframes goldShimmer {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Live Radar Pulse Dot */
+    .live-radar-dot {
+      position: relative;
+    }
+    .live-radar-dot::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: rgba(34, 197, 94, 0.6);
+      animation: radar-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+    @keyframes radar-ping {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(2.8); opacity: 0; }
+    }
+
+    /* Glassmorphism Panels */
+    .glass-panel {
+      background: rgba(10, 12, 17, 0.88);
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.75);
+    }
+    .glass-gold {
+      background: rgba(212, 175, 55, 0.08);
+      backdrop-filter: blur(24px) saturate(160%);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), inset 0 0 18px rgba(212, 175, 55, 0.08);
+    }
+
+    /* Interactive Buttons */
+    .interactive-btn {
+      pointer-events: auto;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+    }
+    .interactive-btn:hover {
+      transform: translateY(-2px) scale(1.02);
+      border-color: rgba(212, 175, 55, 0.65);
+      box-shadow: 0 0 25px rgba(212, 175, 55, 0.35);
+    }
+    .interactive-btn:active {
+      transform: translateY(1px) scale(0.98);
+    }
+    .interactive-btn.active {
+      background: rgba(212, 175, 55, 0.25) !important;
+      border-color: #d4af37 !important;
+      box-shadow: 0 0 35px rgba(212, 175, 55, 0.55) !important;
+    }
+
+    /* ══════════════════════════════════════════
+       LAMBORGHINI MISSILE START BUTTON (FLIP LID)
+       ══════════════════════════════════════════ */
+    .missile-switch-container {
+      perspective: 700px;
+    }
+    .missile-lid {
+      transform-origin: top center;
+      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.4);
+    }
+    .missile-lid.open {
+      transform: rotateX(-125deg);
+      box-shadow: 0 -8px 25px rgba(239, 68, 68, 0.4), inset 0 1px 1px rgba(255,255,255,0.4);
+    }
+    .engine-btn-glow {
+      box-shadow: 0 0 25px rgba(239, 68, 68, 0.6), inset 0 0 12px rgba(255, 255, 255, 0.3);
+    }
+    .engine-btn-glow.running {
+      box-shadow: 0 0 35px rgba(34, 197, 94, 0.8), inset 0 0 15px rgba(255, 255, 255, 0.4);
+      background: linear-gradient(135deg, #15803d, #22c55e) !important;
+    }
+
+    /* ══════════════════════════════════════════
+       SUPERCAR COCKPIT TACHOMETER HUD (RPM GAUGE)
+       ══════════════════════════════════════════ */
+    .gauge-needle {
+      transform-origin: 100px 100px;
+      transition: transform 0.08s ease-out;
+    }
+
+    /* ══════════════════════════════════════════
+       VIP OWNER PASS 3D KEYCARD MODAL
+       ══════════════════════════════════════════ */
+    #vip-pass-modal {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    #vip-pass-modal.active {
+      display: flex;
+      opacity: 1;
+    }
+    .vip-card-3d {
+      transform-style: preserve-3d;
+      transition: transform 0.1s ease-out, box-shadow 0.3s ease;
+    }
+    .holographic-sheen {
+      background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,0.18) 45%, rgba(212,175,55,0.3) 55%, transparent 75%);
+      mix-blend-mode: overlay;
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════
+       4K PHOTO MODE SCREENSHOT
+       ══════════════════════════════════════════ */
+    body.photo-mode-active #main-header,
+    body.photo-mode-active #scroll-container,
+    body.photo-mode-active #camera-views-bar,
+    body.photo-mode-active #location-widget,
+    body.photo-mode-active #cockpit-hud-drawer {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transform: translateY(20px);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    #photo-mode-bar {
+      display: none;
+    }
+    body.photo-mode-active #photo-mode-bar {
+      display: flex;
+    }
+    #photo-watermark {
+      display: none;
+    }
+    body.photo-mode-active #photo-watermark {
+      display: block;
+    }
+
+    /* Subtle Film Grain */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.024;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #06070a; }
+    ::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 3px; }
+
+    /* Loading Screen */
+    #preloader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #050608;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #preloader.fade-out {
+      opacity: 0;
+      transform: scale(1.04);
+      pointer-events: none;
+    }
+
+    /* Drag & Drop Overlay Alert */
+    #drop-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9990;
+      background: rgba(5, 6, 9, 0.88);
+      border: 3px dashed #d4af37;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    #drop-overlay.active {
+      display: flex;
+    }
+  </style>
+</head>
+<body class="selection:bg-amber-500/30 selection:text-amber-200">
+
+  <!-- ══════════════════════════════════════════════════
+       PRELOADER OVERLAY WITH DHP CREST
+  ══════════════════════════════════════════════════ -->
+  <div id="preloader">
+    <div class="text-center px-6">
+      <div class="w-16 h-20 mx-auto mb-4 drop-shadow-[0_0_25px_rgba(212,175,55,0.6)] animate-pulse">
+        <img src="./assets/logo.svg" alt="DHP Crest" class="w-full h-full object-contain"/>
+      </div>
+      <div class="text-xs tracking-[0.4em] font-mono-num font-bold uppercase mb-2 text-amber-400">VAULT PROTOCOL // 01</div>
+      <h1 class="font-display font-black text-3xl md:text-5xl tracking-tight gold-gradient-text mb-2">PRIVATE SUPERCAR GARAGE</h1>
+      <p class="font-body text-xs tracking-[0.3em] text-amber-200/80 uppercase font-semibold mb-6">ĐINH HỮU PHƯỚC · ĐỒNG NAI, VIỆT NAM</p>
+
+      <div class="w-64 md:w-80 h-[2px] bg-white/10 rounded-full mx-auto overflow-hidden mb-4">
+        <div id="loader-progress" class="h-full w-0 bg-gradient-to-r from-amber-600 via-amber-300 to-amber-500 transition-all duration-300"></div>
+      </div>
+      <div id="loader-status" class="font-mono-num text-[11px] tracking-widest text-white/70 uppercase font-medium">INITIALIZING V12 ENGINE…</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       DRAG & DROP BLENDER FILE MODAL
+  ══════════════════════════════════════════════════ -->
+  <div id="drop-overlay">
+    <div class="w-20 h-20 rounded-2xl glass-gold border border-amber-400 flex items-center justify-center font-display font-bold text-4xl text-amber-300 mb-4 animate-bounce">
+      ↓
+    </div>
+    <div class="font-display font-black text-4xl gold-gradient-text mb-2">THẢ FILE MODEL 3D TẠI ĐÂY</div>
+    <div class="font-mono-num text-sm text-white/80 font-medium">HỖ TRỢ ĐỊNH DẠNG .GLB HOẶC .GLTF TỪ BLENDER</div>
+  </div>
+
+  <!-- Hidden File Input for Custom Model -->
+  <input type="file" id="model-file-input" accept=".glb,.gltf" class="hidden"/>
+
+  <!-- ══════════════════════════════════════════════════
+       THREE.JS WEBGL CONTAINER
+  ══════════════════════════════════════════════════ -->
+  <div id="webgl-container"></div>
+
+  <!-- ══════════════════════════════════════════════════
+       4K PHOTO MODE CINEMATIC OVERLAYS
+  ══════════════════════════════════════════════════ -->
+  <!-- Floating Top Bar for Photo Mode -->
+  <div id="photo-mode-bar" class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] glass-gold rounded-2xl px-6 py-3.5 items-center gap-4 border border-amber-400/50 shadow-2xl backdrop-blur-2xl">
+    <div class="flex items-center gap-2 pr-3 border-r border-amber-400/30">
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+      <span class="font-mono-num text-xs font-bold text-amber-300 tracking-wider">CHẾ ĐỘ CHỤP ẢNH 4K</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="font-mono-num text-[10px] text-white/70 uppercase">ỐNG KÍNH (FOV):</span>
+      <input type="range" id="photo-fov-slider" min="25" max="75" value="38" class="accent-amber-400 cursor-pointer w-24"/>
+    </div>
+    <div class="flex items-center gap-2 pl-3 border-l border-amber-400/30">
+      <button onclick="capture4kPhoto()" class="interactive-btn px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-mono-num text-xs font-black tracking-wider uppercase flex items-center gap-2 shadow-lg hover:brightness-110">
+        <span>📸</span>
+        <span>LƯU HÌNH NỀN (4K PNG)</span>
+      </button>
+      <button onclick="togglePhotoMode(false)" class="interactive-btn px-3 py-2 rounded-xl glass-panel text-white/80 hover:text-white font-mono-num text-xs font-semibold">
+        ✕ THOÁT (ESC)
+      </button>
+    </div>
+  </div>
+
+  <!-- Discreet Watermark in Photo Mode -->
+  <div id="photo-watermark" class="fixed bottom-8 right-10 z-[100] pointer-events-none select-none text-right">
+    <div class="flex items-center justify-end gap-3 mb-1">
+      <img src="./assets/logo.svg" alt="DHP Logo" class="w-7 h-9 opacity-80 drop-shadow-md"/>
+      <div class="font-display font-black text-xl text-white/90 tracking-wider drop-shadow-md">LAMBORGHINI AVENTADOR SV</div>
+    </div>
+    <div class="font-mono-num text-[11px] tracking-[0.3em] text-amber-300/80 font-bold uppercase drop-shadow-md">
+      BỘ SƯU TẬP TƯ NHÂN · ĐINH HỮU PHƯỚC · ĐỒNG NAI
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       FIXED TOP NAVIGATION (UPGRADED LOGO & AVATAR)
+  ══════════════════════════════════════════════════ -->
+  <header id="main-header" class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 md:px-10 py-4 transition-all duration-500 pointer-events-auto">
+    <!-- Brand Signature with Logo Emblem + Enhanced Avatar -->
+    <div class="flex items-center gap-3 md:gap-4">
+      <!-- 3D Beveled Gold Shield Crest Logo -->
+      <a href="#section-owner" onclick="openVipPassModal(); return false;" class="relative group cursor-pointer block flex-shrink-0" title="Xem Thẻ VIP Owner Pass của Đinh Hữu Phước">
+        <div class="w-10 h-12 md:w-11 md:h-13 transition-transform duration-300 group-hover:scale-110 drop-shadow-[0_0_18px_rgba(212,175,55,0.55)]">
+          <img src="./assets/logo.svg" alt="DHP Crest Logo" class="w-full h-full object-contain"/>
+        </div>
+      </a>
+
+      <!-- Divider -->
+      <span class="w-[1px] h-8 bg-gradient-to-b from-transparent via-amber-400/40 to-transparent"></span>
+
+      <!-- Owner Avatar with Shimmer Ring + Verified Radar Pulse -->
+      <a href="#section-owner" onclick="openVipPassModal(); return false;" class="flex items-center gap-3 group cursor-pointer no-underline">
+        <div class="relative">
+          <div class="w-11 h-11 md:w-12 md:h-12 rounded-full p-[2.5px] owner-avatar-ring shadow-[0_0_22px_rgba(212,175,55,0.55)] group-hover:scale-105 transition-transform duration-300 relative">
+            <img id="header-avatar-img" src="./assets/owner_black.png" alt="Đinh Hữu Phước" class="w-full h-full object-cover rounded-full border border-black/60"/>
+            <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-amber-500/20 to-transparent pointer-events-none"></div>
+          </div>
+          <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-[#06070a] shadow-sm live-radar-dot" title="Chủ xe trực tuyến"></span>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-display text-base md:text-xl font-bold tracking-wider leading-none gold-gradient-text group-hover:text-amber-200 transition-colors">ĐINH HỮU PHƯỚC</span>
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-mono-num font-bold bg-amber-400/25 text-amber-300 border border-amber-400/40">VIP OWNER</span>
+            <span class="hidden xl:inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-mono-num font-bold bg-white/10 text-white/80 border border-white/10">VAULT 01</span>
+          </div>
+          <div class="font-mono-num text-[9px] tracking-[0.25em] text-white/60 uppercase mt-1">PRIVATE SUPERCAR GARAGE · ĐỒNG NAI</div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Center Nav Links -->
+    <nav class="hidden lg:flex items-center gap-6 font-body text-xs tracking-[0.22em] text-white/70 uppercase font-medium">
+      <a href="#section-hero" class="hover:text-amber-300 transition-colors">Aventador SV</a>
+      <a href="#section-specs" class="hover:text-amber-300 transition-colors">Thông Số V12</a>
+      <a href="#section-aerodynamics" class="hover:text-amber-300 transition-colors">Khí Động Học</a>
+      <a href="#section-owner" class="hover:text-amber-300 transition-colors text-amber-300 font-semibold flex items-center gap-1.5">
+        <span>Chủ Sở Hữu</span>
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+      </a>
+      <!-- Dedicated 360 Panorama Showroom Link -->
+      <a href="./showroom.html" class="glass-gold px-3.5 py-1.5 rounded-full border border-amber-400 text-[11px] font-mono-num text-amber-300 hover:text-white flex items-center gap-1.5 transition-transform hover:scale-105 shadow-[0_0_15px_rgba(212,175,55,0.35)]">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-400"></span>
+        </span>
+        <span class="font-bold">TOÀN CẢNH 360°</span>
+      </a>
+      <!-- VIP Card Trigger Pill -->
+      <button onclick="openVipPassModal()" class="interactive-btn glass-gold px-3 py-1.5 rounded-full border border-amber-400/50 text-[10px] font-mono-num text-amber-300 hover:text-white flex items-center gap-1.5">
+        <span>💳</span>
+        <span>THẺ VIP PASS</span>
+      </button>
+    </nav>
+
+    <!-- Top Right Controls (Showroom 360, Photo Mode, Blender Import & Sound) -->
+    <div class="flex items-center gap-2 sm:gap-2.5">
+      <!-- 360 Panorama Showroom Button for Mobile & Desktop -->
+      <a href="./showroom.html" class="interactive-btn glass-gold rounded-full px-3 py-2 flex items-center gap-1.5 text-[10px] font-mono-num tracking-wider text-amber-300 hover:text-white border border-amber-400 shadow-[0_0_12px_rgba(212,175,55,0.35)]" title="Mở trang xem toàn cảnh 3D mô hình siêu xe 360°">
+        <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        <span class="font-bold">360° 3D</span>
+      </a>
+      <!-- 4K Screenshot Mode Button -->
+      <button onclick="togglePhotoMode(true)" class="interactive-btn glass-gold rounded-full px-3.5 py-2 flex items-center gap-1.5 text-[10px] font-mono-num tracking-wider text-amber-300 hover:text-white border border-amber-400/40" title="Ẩn UI và chụp ảnh siêu xe 4K">
+        <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <span class="hidden sm:inline">CHỤP ẢNH 4K</span>
+      </button>
+
+      <!-- Blender Import Button -->
+      <button id="btn-import-model" class="interactive-btn glass-panel rounded-full px-3.5 py-2 flex items-center gap-1.5 text-[10px] font-mono-num tracking-wider text-white/80 hover:text-white border border-white/10" title="Nạp file .glb từ Blender">
+        <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+        </svg>
+        <span id="import-label" class="hidden sm:inline">NẠP .GLB</span>
+      </button>
+
+      <!-- Sound Toggle Mini HUD -->
+      <button id="btn-sound-toggle" class="interactive-btn glass-panel rounded-full px-3.5 py-2 flex items-center gap-2 text-[10px] font-mono-num tracking-wider text-amber-200 border border-white/10" title="Bật/Tắt âm thanh V12">
+        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+        <span id="sound-label">SOUND V12</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════
+       FIXED LIVE LOCATION & TELEMETRY WIDGET (Responsive)
+  ══════════════════════════════════════════════════ -->
+  <aside id="location-widget" class="fixed bottom-16 sm:bottom-6 right-3 sm:right-5 md:right-8 z-40 sm:z-50 glass-panel rounded-2xl px-3 sm:px-4 py-2 sm:py-3.5 max-w-[280px] pointer-events-auto border border-white/10 shadow-2xl transition-all duration-300 hidden sm:block">
+    <div class="flex items-center justify-between border-b border-white/10 pb-1.5 sm:pb-2 mb-1.5 sm:mb-2">
+      <div class="flex items-center gap-2">
+        <div class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></div>
+        <span class="font-mono-num text-[9px] sm:text-[10px] tracking-[0.25em] text-white/60 uppercase">TELEMETRY LINK</span>
+      </div>
+      <span class="font-mono-num text-[9px] sm:text-[10px] text-amber-400 font-bold tracking-wider">ONLINE</span>
+    </div>
+
+    <div class="flex items-center gap-2.5 sm:gap-3">
+      <!-- Mini Avatar with Link to Pass -->
+      <div onclick="openVipPassModal()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full p-[1.5px] owner-avatar-ring flex-shrink-0 cursor-pointer hover:scale-110 transition-transform" title="Xem Thẻ VIP">
+        <img id="widget-avatar-img" src="./assets/owner_black.png" alt="Đinh Hữu Phước" class="w-full h-full object-cover rounded-full"/>
+      </div>
+      <div class="flex-grow">
+        <div class="font-body text-[11px] sm:text-xs font-bold text-white/95">Đinh Hữu Phước · Đồng Nai</div>
+        <div class="font-mono-num text-[9px] sm:text-[10px] text-amber-300/80 tracking-wider">10.9574° N, 106.8427° E</div>
+      </div>
+      <div class="text-right">
+        <div id="live-clock" class="font-mono-num font-bold text-sm sm:text-base text-amber-300 tracking-wider leading-none">00:00:00</div>
+        <div class="font-mono-num text-[8px] sm:text-[9px] text-white/50">GMT+07:00</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══════════════════════════════════════════════════
+       FIXED CAMERA VIEWS & QUICK 360 SHOWROOM BAR (Mobile-First)
+  ══════════════════════════════════════════════════ -->
+  <aside id="camera-views-bar" class="fixed bottom-3 sm:bottom-6 left-3 sm:left-5 md:left-8 right-3 sm:right-auto z-50 glass-panel rounded-2xl p-1.5 sm:p-2 md:p-2.5 flex items-center gap-1.5 md:gap-2 border border-white/10 pointer-events-auto shadow-2xl transition-all duration-300 max-w-[calc(100vw-1.5rem)] sm:max-w-2xl overflow-x-auto no-scrollbar flex-nowrap">
+    <!-- Dedicated 360 Panorama Room Pill -->
+    <a href="./showroom.html" class="px-3 py-1.5 rounded-xl font-mono-num text-[11px] font-extrabold text-amber-300 glass-gold border border-amber-400 transition-all hover:scale-105 flex items-center gap-1.5 flex-shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.4)]" title="Mở trang xem toàn cảnh 3D mô hình siêu xe 360°">
+      <span class="text-xs">🌐</span>
+      <span>TOÀN CẢNH 3D</span>
+    </a>
+    <div class="hidden sm:flex items-center gap-1.5 px-1.5 border-l border-white/10">
+      <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+      <span class="font-mono-num text-[10px] text-amber-300 font-semibold uppercase tracking-wider hidden lg:inline">GÓC:</span>
+    </div>
+    <button onclick="setCameraView('hero')" class="cam-view-btn active px-2.5 sm:px-3 py-1.5 rounded-xl font-mono-num text-[10px] sm:text-[11px] text-amber-300 glass-gold border border-amber-400 transition-all hover:scale-105 flex-shrink-0" title="Góc mắt người chụp 3/4 ngoài đời (~1.25m)">
+      📸 3/4 THỰC TẾ
+    </button>
+    <button onclick="setCameraView('front')" class="cam-view-btn px-2.5 sm:px-3 py-1.5 rounded-xl font-mono-num text-[10px] sm:text-[11px] text-white/60 hover:text-white glass-panel transition-all hover:scale-105 flex-shrink-0" title="Góc gầm thấp sát cản trước (~0.65m)">
+      🏎️ ĐẦU XE
+    </button>
+    <button onclick="setCameraView('side')" class="cam-view-btn px-2.5 sm:px-3 py-1.5 rounded-xl font-mono-num text-[10px] sm:text-[11px] text-white/60 hover:text-white glass-panel transition-all hover:scale-105 flex-shrink-0" title="Góc nhìn ngang mâm phanh & cửa cắt kéo">
+      🚪 CỬA XE
+    </button>
+    <button onclick="setCameraView('rear')" class="cam-view-btn px-2.5 sm:px-3 py-1.5 rounded-xl font-mono-num text-[10px] sm:text-[11px] text-white/60 hover:text-white glass-panel transition-all hover:scale-105 flex-shrink-0" title="Góc đuôi xe & cánh gió SV">
+      🏁 ĐUÔI & WING
+    </button>
+    <button onclick="toggleAutoRotate()" id="btn-auto-rotate" class="cam-view-btn px-2.5 sm:px-3 py-1.5 rounded-xl font-mono-num text-[10px] sm:text-[11px] text-amber-300 hover:text-white glass-panel transition-all hover:scale-105 flex-shrink-0" title="Bật/Tắt chế độ tự động xoay 360°">
+      🔄 XOAY
+    </button>
+  </aside>
+
+  <!-- ══════════════════════════════════════════════════
+       SCROLL STORYBOARD SECTIONS
+  ══════════════════════════════════════════════════ -->
+  <main id="scroll-container">
+
+    <!-- ── SECTION 1: HERO & INTERACTIVE COCKPIT CONTROLS ── -->
+    <section id="section-hero" class="min-h-screen flex flex-col justify-end px-5 md:px-12 pb-16 pt-32">
+      <div class="max-w-4xl relative z-10">
+        <!-- Collection Protocol Badge -->
+        <div class="flex items-center gap-3 mb-3">
+          <span class="inline-block w-8 h-[2px] bg-gradient-to-r from-amber-400 to-yellow-200"></span>
+          <span class="font-mono-num text-xs tracking-[0.3em] text-amber-300 font-bold uppercase">01 // BỘ SƯU TẬP TƯ NHÂN · ĐINH HỮU PHƯỚC</span>
+        </div>
+
+        <h1 class="font-display font-black text-[clamp(2.8rem,7vw,7rem)] leading-[0.92] tracking-tight mb-4">
+          <span class="block gold-gradient-text drop-shadow-md">LAMBORGHINI</span>
+          <span class="block text-white/95">AVENTADOR SV</span>
+        </h1>
+
+        <p class="font-body text-sm md:text-base text-white/85 max-w-xl leading-relaxed mb-6">
+          Tái hiện chân thực 100% siêu phẩm Aventador SV trong bộ cánh <span class="text-amber-200 font-semibold underline decoration-amber-400/50 underline-offset-4" id="hero-finish-highlight">Matte Grigio Titans</span> đặt dưới hệ thống trần đèn LED kim cương <span class="text-white font-semibold">(Diamond Grid Lighting)</span>. Bộ sưu tập đỉnh cao của chủ xe <strong class="text-amber-300 font-bold">Đinh Hữu Phước</strong>.
+        </p>
+
+        <!-- ══════════════════════════════════════════
+             EXPANDED PBR PAINT FINISHES (8 AUTHENTIC COLORS)
+             ══════════════════════════════════════════ -->
+        <div class="glass-panel p-4 rounded-2xl border border-white/10 mb-6 pointer-events-auto max-w-2xl">
+          <div class="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
+            <span class="font-mono-num text-[11px] text-amber-300 font-bold uppercase tracking-wider flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+              BẢNG MÀU SƠN PBR CHÍNH HÃNG:
+            </span>
+            <span id="color-name-display" class="font-mono-num text-xs text-amber-200 tracking-wider font-bold">MATTE GRIGIO TITANS (XÁM NHÁM)</span>
+          </div>
+
+          <!-- Color Swatches Grid -->
+          <div class="flex flex-wrap items-center gap-2.5 mb-3">
+            <button onclick="setCarColor(0x2e3036, 'MATTE GRIGIO TITANS (XÁM NHÁM)', 0.48, 0.42)" class="color-btn active w-7 h-7 rounded-full border-2 border-amber-400 bg-[#2e3036] shadow-md transition-transform hover:scale-115" title="Matte Grigio Titans"></button>
+            <button onclick="setCarColor(0xe0540d, 'ARANCIO ARGOS (CAM METALLIC)', 0.22, 0.45)" class="color-btn w-7 h-7 rounded-full border border-white/30 bg-[#e0540d] shadow-md transition-transform hover:scale-115" title="Arancio Argos (Cam ánh kim)"></button>
+            <button onclick="setCarColor(0xd4af37, 'GIALLO ORION (VÀNG ÁNH KIM 3 LỚP)', 0.25, 0.55)" class="color-btn w-7 h-7 rounded-full border border-white/30 bg-[#d4af37] shadow-md transition-transform hover:scale-115" title="Giallo Orion (Vàng ngọc trai)"></button>
+            <button onclick="setCarColor(0xa81313, 'ROSSO MARS (ĐỎ THỂ THAO CORSA)', 0.20, 0.40)" class="color-btn w-7 h-7 rounded-full border border-white/30 bg-[#a81313] shadow-md transition-transform hover:scale-115" title="Rosso Mars (Đỏ đua)"></button>
+            <button onclick="setCarColor(0x16a34a, 'VERDE ITHACA (XANH CỐM NEON)', 0.24, 0.50)" class="color-btn w-7 h-7 rounded-full border border-white/30 bg-[#16a34a] shadow-md transition-transform hover:scale-115" title="Verde Ithaca (Xanh lá neon)"></button>
+            <button onclick="setCarColor(0x121316, 'NERO NEMESIS (ĐEN MỜ SATIN)', 0.46, 0.50)" class="color-btn w-7 h-7 rounded-full border border-white/30 bg-[#121316] shadow-md transition-transform hover:scale-115" title="Nero Nemesis (Đen mờ)"></button>
+            <button onclick="setCarColor(0x581c87, 'VIOLA PASIFAE (TÍM HOÀNG GIA)', 0.22, 0.58)" class="color-btn w-7 h-7 rounded-full border border-white/30 bg-[#581c87] shadow-md transition-transform hover:scale-115" title="Viola Pasifae (Tím hoàng gia)"></button>
+            <button onclick="setCarColor(0xf1f5f9, 'BIANCO MONOCERUS (TRẮNG NGỌC TRAI)', 0.25, 0.35)" class="color-btn w-7 h-7 rounded-full border border-white/30 bg-[#f1f5f9] shadow-md transition-transform hover:scale-115" title="Bianco Monocerus (Trắng tuyết)"></button>
+          </div>
+
+          <!-- Finish Modes (Gloss, Matte, Metallic) & Caliper Color -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/10">
+            <!-- Finish Type -->
+            <div class="flex items-center gap-1.5">
+              <span class="font-mono-num text-[10px] text-white/50 uppercase mr-1">CHẤT LIỆU:</span>
+              <button onclick="setPaintFinish('matte')" class="finish-mode-btn active px-2.5 py-1 rounded-lg text-[10px] font-mono-num font-bold glass-gold border border-amber-400 text-amber-300">NHÁM (MATTE)</button>
+              <button onclick="setPaintFinish('gloss')" class="finish-mode-btn px-2.5 py-1 rounded-lg text-[10px] font-mono-num font-semibold glass-panel text-white/70 hover:text-white">BÓNG (GLOSS)</button>
+              <button onclick="setPaintFinish('metallic')" class="finish-mode-btn px-2.5 py-1 rounded-lg text-[10px] font-mono-num font-semibold glass-panel text-white/70 hover:text-white">ÁNH KIM</button>
+            </div>
+
+            <!-- Caliper Color -->
+            <div class="flex items-center gap-1.5">
+              <span class="font-mono-num text-[10px] text-white/50 uppercase mr-1">CÙM PHANH:</span>
+              <button onclick="setCaliperColor(0xd4af37)" class="w-5 h-5 rounded-full bg-[#d4af37] border border-white/40 hover:scale-120 transition-transform" title="Vàng Gold Brembo"></button>
+              <button onclick="setCaliperColor(0xef4444)" class="w-5 h-5 rounded-full bg-[#ef4444] border border-white/40 hover:scale-120 transition-transform" title="Đỏ Corsa"></button>
+              <button onclick="setCaliperColor(0x84cc16)" class="w-5 h-5 rounded-full bg-[#84cc16] border border-white/40 hover:scale-120 transition-transform" title="Xanh Acid"></button>
+              <button onclick="setCaliperColor(0xf97316)" class="w-5 h-5 rounded-full bg-[#f97316] border border-white/40 hover:scale-120 transition-transform" title="Cam Argos"></button>
+              <button onclick="setCaliperColor(0x18181b)" class="w-5 h-5 rounded-full bg-[#18181b] border border-white/40 hover:scale-120 transition-transform" title="Đen Bóng"></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             LAMBORGHINI MISSILE START ENGINE & CONTROLS HUD
+             ══════════════════════════════════════════ -->
+        <div class="flex flex-wrap items-center gap-4 mb-8 pointer-events-auto">
+          
+          <!-- Authentic Lamborghini Red Missile Lid Starter Button -->
+          <div class="missile-switch-container flex items-center gap-3 glass-panel p-2.5 px-4 rounded-2xl border border-red-500/30 shadow-2xl">
+            <div class="relative w-14 h-16 flex items-center justify-center">
+              <!-- Beneath: Engine Start/Stop Push Button -->
+              <button id="btn-start-engine" onclick="handleStartEngine()" class="w-12 h-12 rounded-xl bg-gradient-to-br from-red-600 via-rose-700 to-red-900 border-2 border-red-400 flex flex-col items-center justify-center text-center cursor-pointer engine-btn-glow active:scale-95 transition-all">
+                <span class="font-mono-num font-black text-[9px] text-white leading-tight">ENGINE</span>
+                <span id="engine-status-text" class="font-mono-num font-black text-[8px] text-amber-200 uppercase leading-none">START</span>
+              </button>
+
+              <!-- On top: Red Hinged Anodized Missile Lid -->
+              <div id="missile-lid" onclick="toggleMissileLid()" class="missile-lid absolute inset-0 rounded-xl bg-gradient-to-b from-red-600 via-red-700 to-rose-950 border border-red-400/80 cursor-pointer flex flex-col items-center justify-between p-1.5 select-none" title="Bấm để lật nắp an toàn">
+                <div class="w-full h-1 bg-amber-400/80 rounded-full"></div>
+                <div class="font-mono-num font-black text-[7px] text-white/90 tracking-wider text-center uppercase">/// LIFT ///</div>
+                <div class="w-4 h-1 bg-white/40 rounded-full"></div>
+              </div>
+            </div>
+
+            <!-- Starter Status Label & Help -->
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span id="engine-live-dot" class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                <span id="engine-banner-title" class="font-mono-num text-xs font-bold text-red-400 uppercase tracking-wider">ĐỘNG CƠ: ĐANG TẮT</span>
+              </div>
+              <div class="font-mono-num text-[10px] text-white/60 mt-0.5">LẬT NẮP ĐỎ ĐỂ ĐỀ NỔ V12</div>
+            </div>
+          </div>
+
+          <!-- Rev Engine Button (with Spacebar prompt) -->
+          <button id="btn-rev-engine" class="interactive-btn glass-panel rounded-2xl px-5 py-4 flex items-center gap-3 font-mono-num text-xs tracking-wider uppercase text-amber-300 hover:text-white font-bold border border-amber-400/30">
+            <svg class="w-4 h-4 text-amber-400 animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <div class="text-left">
+              <div class="leading-none">NẠP GA (REV V12)</div>
+              <div class="font-mono-num text-[9px] text-white/50 mt-1">[GIỮ SPACEBAR]</div>
+            </div>
+          </button>
+
+          <!-- Scissor Doors Toggle -->
+          <button id="btn-toggle-doors" class="interactive-btn glass-gold rounded-2xl px-5 py-4 flex items-center gap-3 font-mono-num text-xs tracking-wider uppercase text-white/95 font-semibold">
+            <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+            </svg>
+            <span id="door-btn-text">ĐÓNG/MỞ CỬA CẮT KÉO</span>
+          </button>
+
+          <!-- Headlights & Y-LED Toggle -->
+          <button id="btn-toggle-lights" class="interactive-btn glass-gold rounded-2xl px-5 py-4 flex items-center gap-3 font-mono-num text-xs tracking-wider uppercase text-white/95 font-semibold">
+            <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2a7 7 0 0 1 7 7c0 2.6-1.4 4.9-3.5 6.2V17a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-1.8A7 7 0 0 1 5 9a7 7 0 0 1 7-7zm-2 19h4v1a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-1z"/>
+            </svg>
+            <span id="light-btn-text">ĐÈN PHA Y-LED</span>
+          </button>
+
+          <!-- Prominent Dedicated 360 Panorama Showroom Button -->
+          <a href="./showroom.html" class="interactive-btn glass-gold bg-gradient-to-r from-amber-500/20 via-amber-400/30 to-yellow-500/20 hover:from-amber-500/35 hover:to-yellow-500/35 rounded-2xl px-6 py-4 flex items-center gap-3 font-mono-num text-xs tracking-wider uppercase text-amber-200 hover:text-white font-extrabold border-2 border-amber-400 shadow-[0_0_25px_rgba(212,175,55,0.4)] transition-all hover:scale-105" title="Mở trang xem toàn cảnh 3D mô hình siêu xe 360°">
+            <span class="relative flex h-3 w-3">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-80"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-amber-400"></span>
+            </span>
+            <div class="text-left">
+              <div class="leading-none text-white font-display text-sm tracking-wide">XEM TOÀN CẢNH 3D (360°)</div>
+              <div class="font-mono-num text-[9px] text-amber-300/90 mt-1">TRANG RIÊNG BIỆT · TỐI ƯU MOBILE & IPAD</div>
+            </div>
+            <svg class="w-4 h-4 text-amber-300 ml-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+          </a>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             LIVE SUPERCAR TACHOMETER & SPEED HUD GAUGE
+             ══════════════════════════════════════════ -->
+        <div class="glass-panel p-4 rounded-2xl border border-white/10 max-w-xl pointer-events-auto flex items-center gap-5 shadow-2xl mb-8">
+          <!-- Mini SVG Tachometer Dial -->
+          <div class="relative w-24 h-24 flex-shrink-0">
+            <svg viewBox="0 0 200 200" class="w-full h-full">
+              <!-- Outer Arc Track -->
+              <path d="M 40 160 A 80 80 0 1 1 160 160" fill="none" stroke="#1f242d" stroke-width="12" stroke-linecap="round"/>
+              <!-- Redline Zone (8500 - 9000 RPM) -->
+              <path d="M 142 68 A 80 80 0 0 1 160 160" fill="none" stroke="#ef4444" stroke-width="12" stroke-linecap="round"/>
+              <!-- Active RPM Arc -->
+              <path id="tach-arc-active" d="M 40 160 A 80 80 0 0 1 40 160" fill="none" stroke="url(#goldBevel)" stroke-width="12" stroke-linecap="round"/>
+              <!-- Central Hub -->
+              <circle cx="100" cy="100" r="16" fill="#090b10" stroke="#d4af37" stroke-width="2"/>
+              <!-- Needle -->
+              <line id="tach-needle" x1="100" y1="100" x2="100" y2="35" stroke="#ef4444" stroke-width="3" stroke-linecap="round" class="gauge-needle" style="transform: rotate(-120deg);"/>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center pt-8">
+              <span class="font-mono-num font-bold text-[8px] text-amber-400 uppercase">RPM x1000</span>
+            </div>
+          </div>
+
+          <!-- Digital Telemetry Cluster Readouts -->
+          <div class="flex-grow grid grid-cols-3 gap-3">
+            <div>
+              <div class="font-mono-num text-[10px] text-white/50 uppercase">VÒNG TUA (RPM)</div>
+              <div id="hud-rpm-val" class="font-mono-num text-2xl font-black text-amber-300">0</div>
+              <div class="font-mono-num text-[9px] text-emerald-400">REDLINE: 8,500</div>
+            </div>
+            <div>
+              <div class="font-mono-num text-[10px] text-white/50 uppercase">TỐC ĐỘ</div>
+              <div id="hud-speed-val" class="font-mono-num text-2xl font-black text-white">0</div>
+              <div class="font-mono-num text-[9px] text-white/50">KM / H</div>
+            </div>
+            <div>
+              <div class="font-mono-num text-[10px] text-white/50 uppercase">CHẾ ĐỘ LÁI</div>
+              <div class="font-display text-xl font-black text-amber-400">CORSA</div>
+              <div id="hud-gear-val" class="font-mono-num text-[9px] text-amber-300 font-bold">GEAR: P</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scroll & Drag Indicator Hint -->
+        <div class="flex items-center gap-3.5 text-white/60">
+          <div class="w-5 h-9 rounded-full border border-white/30 flex items-start justify-center p-1">
+            <div class="w-1.5 h-2.5 rounded-full bg-amber-400 animate-bounce"></div>
+          </div>
+          <span class="font-mono-num text-[11px] tracking-[0.2em] uppercase font-medium">CUỘN TRANG HOẶC KÉO CHUỘT ĐỂ XOAY 360° QUANH SIÊU XE</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 2: FRONT & Y-LIGHT CLOSE-UP ── -->
+    <section id="section-front" class="min-h-screen flex items-center px-6 md:px-16 py-24">
+      <div class="max-w-xl glass-panel p-8 md:p-11 rounded-3xl border border-white/10 pointer-events-auto shadow-2xl">
+        <div class="font-mono-num text-xs tracking-[0.3em] text-amber-400 font-bold uppercase mb-2 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          <span>02 / THIẾT KẾ ĐẦU XE & ĐÈN CHỮ Y</span>
+        </div>
+        <h2 class="font-display text-4xl md:text-5xl font-black tracking-tight gold-gradient-text mb-4 leading-tight">SIGNATURE Y-LED<br/>& CARBON AERO FANGS</h2>
+        <p class="font-body text-sm md:text-base text-white/85 leading-relaxed mb-6">
+          Phần đầu xe được tái tạo chính xác theo nguyên mẫu: cản trước sợi carbon với 2 cánh chia gió vuốt nhọn (carbon aero fangs), nắp capo gân kép cơ bắp dập nổi logo Lamborghini và cặp đèn pha Y-LED phát sáng bloom rực rỡ, kèm đèn sương mù cam đặc trưng trên vòm bánh xe.
+        </p>
+        <div class="grid grid-cols-2 gap-4 border-t border-white/10 pt-5">
+          <div>
+            <div class="font-mono-num text-[11px] text-white/60 uppercase font-semibold">LED SIGNATURE</div>
+            <div class="font-display text-2xl font-bold text-amber-300">DUAL Y-DRL BEAM</div>
+          </div>
+          <div>
+            <div class="font-mono-num text-[11px] text-white/60 uppercase font-semibold">FRONT SPLITTER</div>
+            <div class="font-display text-2xl font-bold text-amber-300">SV CARBON FANGS</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 3: WHEELS & CERAMIC BRAKES ── -->
+    <section id="section-specs" class="min-h-screen flex items-center justify-end px-6 md:px-16 py-24">
+      <div class="max-w-xl glass-panel p-8 md:p-11 rounded-3xl border border-white/10 pointer-events-auto shadow-2xl">
+        <div class="font-mono-num text-xs tracking-[0.3em] text-amber-400 font-bold uppercase mb-2 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          <span>03 / MÂM ĐEN BÓNG & PHANH GỐM VÀNG</span>
+        </div>
+        <h2 class="font-display text-4xl md:text-5xl font-black tracking-tight gold-gradient-text mb-4 leading-tight">DIANTHUS WHEELS<br/>& GOLD CALIPERS</h2>
+        <p class="font-body text-sm md:text-base text-white/85 leading-relaxed mb-6">
+          Bộ mâm đúc đa chấu sơn đen bóng (Gloss Black) khóa tâm Center-Lock thể thao. Bên trong là hệ thống phanh gốm Carbon-Ceramic đường kính lớn đi kèm cùm phanh Brembo sơn vàng đồng ánh kim lấp lánh dưới ánh đèn trần.
+        </p>
+        <div class="grid grid-cols-2 gap-4 border-t border-white/10 pt-5">
+          <div>
+            <div class="font-mono-num text-[11px] text-white/60 uppercase font-semibold">KHOẢNG CÁCH HÃM PHANH</div>
+            <div class="font-display text-3xl font-black text-amber-300 font-mono-num">30.0 MÉT</div>
+            <div class="font-body text-xs text-white/60 mt-0.5">100 - 0 km/h</div>
+          </div>
+          <div>
+            <div class="font-mono-num text-[11px] text-white/60 uppercase font-semibold">CÙM PHANH BREMBO</div>
+            <div class="font-display text-3xl font-black text-amber-300">GOLD FINISH</div>
+            <div class="font-body text-xs text-white/60 mt-0.5">Carbon Ceramic Rotor</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 4: REAR WING & V12 SPECS ── -->
+    <section id="section-aerodynamics" class="min-h-screen flex items-center px-6 md:px-16 py-24">
+      <div class="max-w-2xl w-full">
+        <div class="glass-panel p-8 md:p-12 rounded-3xl border border-white/10 pointer-events-auto shadow-2xl">
+          <div class="font-mono-num text-xs tracking-[0.3em] text-amber-400 font-bold uppercase mb-2 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+            <span>04 / CÁNH GIÓ SV & CỖ MÁY V12 HUYỀN THOẠI</span>
+          </div>
+          <h2 class="font-display text-4xl md:text-6xl font-black tracking-tight gold-gradient-text mb-4 leading-tight">EXTREME SV WING<br/>& QUAD EXHAUST</h2>
+          <p class="font-body text-sm md:text-base text-white/85 leading-relaxed mb-8">
+            Cánh gió sau cố định bằng sợi carbon siêu nhẹ của phiên bản SuperVeloce, kết hợp cụm 4 ống xả trung tâm tạo luồng downforce tối đa và âm thanh gầm rú xé gió của cỗ máy 6.5 lít V12 hút khí tự nhiên.
+          </p>
+
+          <!-- Specifications Matrix -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div class="glass-gold p-4 rounded-2xl border border-amber-400/30">
+              <div class="font-mono-num text-[10px] text-amber-300 font-bold uppercase tracking-wider">ĐỘNG CƠ</div>
+              <div class="font-display text-3xl font-black gold-gradient-text my-0.5">6.5L V12</div>
+              <div class="font-body text-xs text-white/70">Nạp khí tự nhiên</div>
+            </div>
+            <div class="glass-gold p-4 rounded-2xl border border-amber-400/30">
+              <div class="font-mono-num text-[10px] text-amber-300 font-bold uppercase tracking-wider">CÔNG SUẤT</div>
+              <div class="font-display text-3xl font-black gold-gradient-text my-0.5">750 HP</div>
+              <div class="font-body text-xs text-white/70">@ 8,400 RPM</div>
+            </div>
+            <div class="glass-gold p-4 rounded-2xl border border-amber-400/30">
+              <div class="font-mono-num text-[10px] text-amber-300 font-bold uppercase tracking-wider">TĂNG TỐC</div>
+              <div class="font-display text-3xl font-black gold-gradient-text my-0.5">2.8 GIÂY</div>
+              <div class="font-body text-xs text-white/70">0 - 100 km/h</div>
+            </div>
+            <div class="glass-gold p-4 rounded-2xl border border-amber-400/30">
+              <div class="font-mono-num text-[10px] text-amber-300 font-bold uppercase tracking-wider">TỐC ĐỘ MAX</div>
+              <div class="font-display text-3xl font-black gold-gradient-text my-0.5">&gt;350</div>
+              <div class="font-body text-xs text-white/70">km/h</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SECTION 5: PRIVATE GARAGE SANCTUARY & OWNER (UPGRADED AVATAR) ── -->
+    <section id="section-owner" class="min-h-screen flex flex-col justify-center items-center text-center px-6 py-28">
+      <div class="max-w-3xl w-full glass-panel p-8 md:p-14 rounded-3xl border border-amber-400/30 pointer-events-auto shadow-[0_20px_60px_rgba(0,0,0,0.85)] relative overflow-hidden">
+        
+        <!-- Subtle Top Glow Accent -->
+        <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-32 bg-amber-400/20 blur-3xl pointer-events-none rounded-full"></div>
+
+        <!-- Official Crest Logo on Top of Sanctuary -->
+        <div class="w-16 h-20 mx-auto mb-5 drop-shadow-[0_0_20px_rgba(212,175,55,0.6)] hover:scale-105 transition-transform cursor-pointer" onclick="openVipPassModal()" title="Xem Thẻ VIP">
+          <img src="./assets/logo.svg" alt="DHP Emblem" class="w-full h-full object-contain"/>
+        </div>
+
+        <!-- VIP Owner Framed High-Definition Portrait -->
+        <div class="relative mx-auto mb-5 inline-block group">
+          <div class="p-1 rounded-3xl owner-avatar-ring shadow-[0_0_45px_rgba(212,175,55,0.45)]">
+            <div class="w-56 h-64 md:w-64 md:h-72 rounded-[22px] overflow-hidden bg-[#090b10] border border-amber-400/40 relative">
+              <img id="sanctuary-avatar-img" src="./assets/owner_black.png" alt="Chủ xe Đinh Hữu Phước" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+              
+              <!-- Bottom gradient vignette & Verified Badge -->
+              <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent p-3 pt-6 flex justify-center">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-400/50 text-[10px] font-mono-num font-bold text-amber-300 uppercase tracking-wider backdrop-blur-md">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  CHỦ SỞ HỮU CHÍNH THỨC
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Avatar View Switcher (Dễ dàng đổi góc chân dung yêu thích) -->
+        <div class="flex flex-wrap items-center justify-center gap-2 mb-6">
+          <span class="font-mono-num text-[10px] text-white/50 uppercase mr-1">CHỌN ẢNH AVATAR:</span>
+          <button onclick="switchAvatar('black')" id="btn-av-black" class="av-opt-btn active px-3 py-1 rounded-full text-[10px] font-mono-num font-bold glass-gold border border-amber-400 text-amber-300">
+            👤 CHÂN DUNG 1 (ÁO ĐEN)
+          </button>
+          <button onclick="switchAvatar('pink')" id="btn-av-pink" class="av-opt-btn px-3 py-1 rounded-full text-[10px] font-mono-num font-semibold glass-panel text-white/70 hover:text-white border border-white/10">
+            👤 CHÂN DUNG 2 (ÁO HỒNG)
+          </button>
+          <button onclick="switchAvatar('duo')" id="btn-av-duo" class="av-opt-btn px-3 py-1 rounded-full text-[10px] font-mono-num font-semibold glass-panel text-white/70 hover:text-white border border-white/10">
+            👥 KỶ NIỆM 2 BẠN (DUO)
+          </button>
+        </div>
+
+        <div class="font-mono-num text-xs tracking-[0.35em] text-amber-400 uppercase font-bold mb-2">
+          PRIVATE SUPERCAR COLLECTION · VAULT 01
+        </div>
+        
+        <h2 class="font-display text-4xl sm:text-6xl md:text-7xl font-black tracking-tight mb-2 gold-gradient-text drop-shadow-lg">
+          ĐINH HỮU PHƯỚC
+        </h2>
+        
+        <div class="font-mono-num text-xs tracking-[0.2em] text-amber-200/90 font-medium uppercase mb-6 flex flex-wrap items-center justify-center gap-2">
+          <span>GARAGE SANCTUARY</span>
+          <span>·</span>
+          <span>ĐỒNG NAI, VIỆT NAM</span>
+          <span>·</span>
+          <span class="text-white/60">10.9574° N, 106.8427° E</span>
+        </div>
+
+        <p class="font-body text-base md:text-lg text-white/85 leading-relaxed max-w-xl mx-auto mb-8 font-normal">
+          Không gian trưng bày tư nhân đẳng cấp quốc tế tái hiện trọn vẹn vẻ đẹp lộng lẫy của siêu xe <strong class="text-amber-300 font-bold">Lamborghini Aventador SV</strong> dưới hệ thống trần đèn kim cương. Biểu tượng cho niềm đam mê tốc độ và phong cách sống thượng lưu của chủ nhân <strong class="text-white font-bold">Đinh Hữu Phước</strong>.
+        </p>
+
+        <!-- Owner Provenance Chips -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8 text-left">
+          <div class="glass-gold p-3.5 rounded-2xl border border-amber-400/25">
+            <div class="font-mono-num text-[10px] text-amber-300 font-bold uppercase">SIÊU XE</div>
+            <div class="font-display text-lg font-bold text-white">Aventador SV V12</div>
+            <div class="font-body text-[11px] text-white/60">Matte Grigio Titans</div>
+          </div>
+          <div class="glass-gold p-3.5 rounded-2xl border border-amber-400/25">
+            <div class="font-mono-num text-[10px] text-amber-300 font-bold uppercase">ÁNH SÁNG</div>
+            <div class="font-display text-lg font-bold text-white">Diamond Grid</div>
+            <div class="font-body text-[11px] text-white/60">Warm-White 3200K</div>
+          </div>
+          <div class="glass-gold p-3.5 rounded-2xl border border-amber-400/25">
+            <div class="font-mono-num text-[10px] text-amber-300 font-bold uppercase">TỌA ĐỘ GARAGE</div>
+            <div class="font-display text-lg font-bold text-white">Đồng Nai, VN</div>
+            <div class="font-body text-[11px] text-white/60">Private Sanctuary</div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap items-center justify-center gap-4">
+          <a href="./showroom.html" class="interactive-btn glass-gold bg-gradient-to-r from-amber-500/20 via-amber-400/30 to-yellow-500/20 rounded-xl px-7 py-3.5 font-mono-num text-xs tracking-widest uppercase text-amber-300 border border-amber-400 hover:text-white font-bold flex items-center gap-2 shadow-[0_0_20px_rgba(212,175,55,0.4)]">
+            <span>🌐</span>
+            <span>XEM TOÀN CẢNH MÔ HÌNH 360°</span>
+          </a>
+          <button onclick="openVipPassModal()" class="interactive-btn glass-gold rounded-xl px-7 py-3.5 font-mono-num text-xs tracking-widest uppercase text-amber-300 border border-amber-400 hover:text-white font-bold flex items-center gap-2">
+            <span>💳</span>
+            <span>XEM THẺ VIP OWNER PASS</span>
+          </button>
+          <button onclick="document.getElementById('model-file-input').click()" class="interactive-btn glass-panel rounded-xl px-7 py-3.5 font-mono-num text-xs tracking-widest uppercase text-white/80 hover:text-white font-bold">
+            📁 NẠP FILE MODEL (.GLB)
+          </button>
+          <button onclick="setCameraView('hero'); window.scrollTo({top: 0, behavior: 'smooth'})" class="interactive-btn glass-panel rounded-xl px-7 py-3.5 font-mono-num text-xs tracking-widest uppercase text-white/80 hover:text-white font-bold">
+            QUAY VỀ ĐẦU TRANG ↑
+          </button>
+        </div>
+      </div>
+
+      <footer class="mt-14 font-mono-num text-[11px] tracking-[0.25em] text-white/50 uppercase pointer-events-auto">
+        © 2026 ĐINH HỮU PHƯỚC — PRIVATE SUPERCAR GARAGE · ĐỒNG NAI, VIỆT NAM.
+      </footer>
+    </section>
+
+  </main>
+
+  <!-- ══════════════════════════════════════════════════
+       THẺ VIP OWNER PASS / DIGITAL KEYCARD MODAL
+  ══════════════════════════════════════════════════ -->
+  <div id="vip-pass-modal" class="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-2xl items-center justify-center p-4">
+    <div id="vip-card-box" class="vip-card-3d relative max-w-md w-full glass-panel rounded-3xl border border-amber-400/50 p-6 md:p-8 shadow-[0_25px_70px_rgba(212,175,55,0.25)] overflow-hidden">
+      
+      <!-- Holographic Interactive Reflection Overlay -->
+      <div class="holographic-sheen absolute inset-0 rounded-3xl pointer-events-none"></div>
+
+      <!-- Card Header -->
+      <div class="flex items-center justify-between border-b border-amber-400/30 pb-4 mb-5">
+        <div class="flex items-center gap-3">
+          <img src="./assets/logo.svg" alt="DHP Logo" class="w-9 h-11 drop-shadow-md"/>
+          <div>
+            <div class="font-display font-black text-lg text-white tracking-wider">VIP OWNER PASS</div>
+            <div class="font-mono-num text-[9px] text-amber-300 tracking-widest uppercase font-bold">EDIZIONE PRIVATA // CHASSIS #01</div>
+          </div>
+        </div>
+        <button onclick="closeVipPassModal()" class="w-8 h-8 rounded-full glass-panel text-white/70 hover:text-white flex items-center justify-center font-bold text-sm border border-white/20">
+          ✕
+        </button>
+      </div>
+
+      <!-- Card Body: Avatar & Details -->
+      <div class="flex items-center gap-5 mb-5">
+        <div class="relative flex-shrink-0">
+          <div class="w-24 h-28 rounded-2xl overflow-hidden p-[2px] owner-avatar-ring shadow-lg">
+            <img id="modal-card-avatar" src="./assets/owner_black.png" alt="Đinh Hữu Phước" class="w-full h-full object-cover rounded-[14px]"/>
+          </div>
+          <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 border-2 border-[#090b10] shadow"></span>
+        </div>
+
+        <div class="flex-grow">
+          <div class="font-mono-num text-[9px] text-amber-400 uppercase font-bold tracking-wider">CHỦ SỞ HỮU HỢP PHÁP</div>
+          <div class="font-display font-black text-2xl text-white gold-gradient-text">ĐINH HỮU PHƯỚC</div>
+          <div class="font-mono-num text-[10px] text-white/80 mt-1">GARAGE: VAULT 01 · ĐỒNG NAI</div>
+          <div class="font-mono-num text-[9px] text-amber-300/80 mt-0.5">VIN: ZA9SV01LAMB2026VN</div>
+        </div>
+      </div>
+
+      <!-- Supercar Specs Matrix -->
+      <div class="grid grid-cols-2 gap-2.5 bg-black/40 p-3.5 rounded-2xl border border-white/10 mb-5">
+        <div>
+          <div class="font-mono-num text-[9px] text-white/50 uppercase">SIÊU XE SỞ HỮU</div>
+          <div class="font-display font-bold text-sm text-white">AVENTADOR LP750-4 SV</div>
+        </div>
+        <div>
+          <div class="font-mono-num text-[9px] text-white/50 uppercase">CỖ MÁY</div>
+          <div class="font-mono-num font-bold text-sm text-amber-300">6.5L V12 (750 HP)</div>
+        </div>
+        <div>
+          <div class="font-mono-num text-[9px] text-white/50 uppercase">MÀU SƠN</div>
+          <div class="font-body text-xs text-white/90">Grigio Titans / Custom</div>
+        </div>
+        <div>
+          <div class="font-mono-num text-[9px] text-white/50 uppercase">XÁC MINH</div>
+          <div class="font-mono-num text-xs text-emerald-400 font-bold">✓ VERIFIED BY DHP</div>
+        </div>
+      </div>
+
+      <!-- Quick Switch Avatar Options Inside Pass -->
+      <div class="mb-5 border-t border-white/10 pt-3">
+        <div class="font-mono-num text-[10px] text-white/60 uppercase mb-2">ĐỔI HÌNH ĐẠI DIỆN TRÊN THẺ & WEBSITE:</div>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="switchAvatar('black')" class="px-2 py-1.5 rounded-xl font-mono-num text-[9px] font-bold glass-gold border border-amber-400 text-amber-300 hover:brightness-125">
+            ÁO ĐEN (BÊN PHẢI)
+          </button>
+          <button onclick="switchAvatar('pink')" class="px-2 py-1.5 rounded-xl font-mono-num text-[9px] font-bold glass-panel text-white/80 hover:text-white border border-white/10">
+            ÁO HỒNG (BÊN TRÁI)
+          </button>
+          <button onclick="switchAvatar('duo')" class="px-2 py-1.5 rounded-xl font-mono-num text-[9px] font-bold glass-panel text-white/80 hover:text-white border border-white/10">
+            ẢNH ĐÔI KỶ NIỆM
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-between border-t border-amber-400/20 pt-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center p-1 border border-white/20">
+            <!-- Simulated QR Code Icon -->
+            <svg class="w-full h-full text-amber-300" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm13-2h3v2h-3v-2zm-3 2h2v3h-2v-3zm3 3h3v3h-3v-3zm-5 1h2v2h-2v-2zm5-4h2v2h-2v-2z"/>
+            </svg>
+          </div>
+          <span class="font-mono-num text-[9px] text-white/50">MÃ SỐ ĐỘC QUYỀN // 01</span>
+        </div>
+
+        <button onclick="closeVipPassModal()" class="interactive-btn px-5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-mono-num text-xs font-black tracking-wider uppercase">
+          XÁC NHẬN
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       MAIN APPLICATION JAVASCRIPT
+  ══════════════════════════════════════════════════ -->
+  <script>
+    (function () {
+      'use strict';
+
+      // ──────────────────────────────────────────
+      // 1. PRELOADER & TELEMETRY CLOCK
+      // ──────────────────────────────────────────
+      var loaderBar = document.getElementById('loader-progress');
+      var loaderText = document.getElementById('loader-status');
+      var preloader = document.getElementById('preloader');
+
+      var progress = 0;
+      var loadSteps = [
+        'INITIALIZING WEBGL 2.0 PBR PIPELINE…',
+        'TUNING MATTE GRIGIO TITANS PAINT…',
+        'CONSTRUCTING DIAMOND CEILING CANOPY…',
+        'SYNTHESIZING V12 AUDIO OSCILLATORS…',
+        'READY TO LAUNCH'
+      ];
+
+      var progressTimer = setInterval(function () {
+        progress += Math.floor(Math.random() * 20 + 10);
+        if (progress > 100) progress = 100;
+        loaderBar.style.width = progress + '%';
+        var stepIndex = Math.min(Math.floor(progress / 25), loadSteps.length - 1);
+        loaderText.textContent = loadSteps[stepIndex];
+
+        if (progress >= 100) {
+          clearInterval(progressTimer);
+          setTimeout(dismissPreloader, 300);
+        }
+      }, 50);
+
+      function dismissPreloader() {
+        if (!preloader || preloader.classList.contains('fade-out')) return;
+        preloader.classList.add('fade-out');
+        setTimeout(function () { preloader.style.display = 'none'; }, 650);
+      }
+      setTimeout(dismissPreloader, 1400);
+
+      // Real-time Live Clock GMT+7
+      function updateClock() {
+        var now = new Date();
+        var h = String(now.getHours()).padStart(2, '0');
+        var m = String(now.getMinutes()).padStart(2, '0');
+        var s = String(now.getSeconds()).padStart(2, '0');
+        var el = document.getElementById('live-clock');
+        if (el) el.textContent = h + ':' + m + ':' + s;
+      }
+      setInterval(updateClock, 1000);
+      updateClock();
+
+      // ──────────────────────────────────────────
+      // 2. AVATAR SWITCHER SYSTEM (3 VIEW MODES)
+      // ──────────────────────────────────────────
+      var avatarPaths = {
+        black: './assets/owner_black.png',
+        pink: './assets/owner_pink.png',
+        duo: './assets/owner_duo.png'
+      };
+
+      window.switchAvatar = function (choice) {
+        var path = avatarPaths[choice] || avatarPaths.black;
+        var headerImg = document.getElementById('header-avatar-img');
+        var widgetImg = document.getElementById('widget-avatar-img');
+        var sanctImg = document.getElementById('sanctuary-avatar-img');
+        var cardImg = document.getElementById('modal-card-avatar');
+
+        if (headerImg) headerImg.src = path;
+        if (widgetImg) widgetImg.src = path;
+        if (sanctImg) sanctImg.src = path;
+        if (cardImg) cardImg.src = path;
+
+        // Update button states in Section 5
+        document.querySelectorAll('.av-opt-btn').forEach(function (btn) {
+          btn.classList.remove('active', 'border-amber-400', 'text-amber-300', 'glass-gold');
+          btn.classList.add('glass-panel', 'text-white/70');
+        });
+        var activeBtn = document.getElementById('btn-av-' + choice);
+        if (activeBtn) {
+          activeBtn.classList.add('active', 'border-amber-400', 'text-amber-300', 'glass-gold');
+          activeBtn.classList.remove('glass-panel', 'text-white/70');
+        }
+
+        try {
+          localStorage.setItem('dhp_avatar_choice', choice);
+        } catch (e) {}
+      };
+
+      // Restore saved avatar preference
+      try {
+        var savedAv = localStorage.getItem('dhp_avatar_choice');
+        if (savedAv && avatarPaths[savedAv]) {
+          switchAvatar(savedAv);
+        }
+      } catch (e) {}
+
+      // ──────────────────────────────────────────
+      // 3. VIP OWNER PASS 3D KEYCARD MODAL
+      // ──────────────────────────────────────────
+      var vipModal = document.getElementById('vip-pass-modal');
+      var vipCardBox = document.getElementById('vip-card-box');
+
+      window.openVipPassModal = function () {
+        if (!vipModal) return;
+        vipModal.classList.add('active');
+        playUiClickSound();
+      };
+
+      window.closeVipPassModal = function () {
+        if (!vipModal) return;
+        vipModal.classList.remove('active');
+        playUiClickSound();
+      };
+
+      vipModal.addEventListener('click', function (e) {
+        if (e.target === vipModal) closeVipPassModal();
+      });
+
+      // Interactive 3D Card Tilt Following Mouse
+      if (vipCardBox) {
+        window.addEventListener('mousemove', function (e) {
+          if (!vipModal.classList.contains('active')) return;
+          var rect = vipCardBox.getBoundingClientRect();
+          var cardX = rect.left + rect.width / 2;
+          var cardY = rect.top + rect.height / 2;
+          var dx = (e.clientX - cardX) / (rect.width / 2);
+          var dy = (e.clientY - cardY) / (rect.height / 2);
+          vipCardBox.style.transform = 'perspective(1000px) rotateY(' + (dx * 14) + 'deg) rotateX(' + (-dy * 14) + 'deg)';
+        });
+      }
+
+      // ──────────────────────────────────────────
+      // 4. PROCEDURAL V12 AUDIO & SOUND FX
+      // ──────────────────────────────────────────
+      var audioCtx = null;
+      var idleOsc = null;
+      var idleGain = null;
+
+      function initAudioContext() {
+        if (!audioCtx) {
+          var AudioClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioClass) audioCtx = new AudioClass();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      }
+
+      function playUiClickSound() {
+        try {
+          initAudioContext();
+          if (!audioCtx) return;
+          var osc = audioCtx.createOscillator();
+          var gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.04);
+          gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.05);
+        } catch (e) {}
+      }
+
+      function startIdleDrone() {
+        if (!audioCtx || idleOsc) return;
+        try {
+          idleOsc = audioCtx.createOscillator();
+          var filter = audioCtx.createBiquadFilter();
+          idleGain = audioCtx.createGain();
+
+          idleOsc.type = 'sawtooth';
+          idleOsc.frequency.value = 32; // Low V12 idle rumble
+
+          filter.type = 'lowpass';
+          filter.frequency.value = 160;
+
+          idleGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+          idleGain.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + 1.2);
+
+          idleOsc.connect(filter);
+          filter.connect(idleGain);
+          idleGain.connect(audioCtx.destination);
+          idleOsc.start();
+        } catch (e) {}
+      }
+
+      function stopIdleDrone() {
+        if (idleGain && audioCtx) {
+          try {
+            idleGain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+            setTimeout(function () {
+              if (idleOsc) { idleOsc.stop(); idleOsc.disconnect(); idleOsc = null; }
+            }, 450);
+          } catch (e) {}
+        }
+      }
+
+      function playV12Sound(revIntensity) {
+        initAudioContext();
+        if (!audioCtx) return;
+
+        var now = audioCtx.currentTime;
+        var duration = revIntensity ? 3.4 : 2.2;
+
+        var masterGain = audioCtx.createGain();
+        masterGain.gain.setValueAtTime(0.001, now);
+        masterGain.gain.exponentialRampToValueAtTime(0.38, now + 0.35);
+        masterGain.gain.linearRampToValueAtTime(0.2, now + 1.2);
+        masterGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        masterGain.connect(audioCtx.destination);
+
+        var baseFreq = revIntensity ? 76 : 54;
+        var harmonics = [1, 1.5, 2, 2.5, 3, 4, 6];
+
+        harmonics.forEach(function (multiplier, idx) {
+          var osc = audioCtx.createOscillator();
+          var filter = audioCtx.createBiquadFilter();
+          var gain = audioCtx.createGain();
+
+          osc.type = (idx % 2 === 0) ? 'sawtooth' : 'triangle';
+          var startF = baseFreq * multiplier;
+          var peakF = startF * (revIntensity ? 2.9 : 1.8);
+
+          osc.frequency.setValueAtTime(startF, now);
+          osc.frequency.exponentialRampToValueAtTime(peakF, now + 0.5);
+          osc.frequency.exponentialRampToValueAtTime(startF * 1.15, now + duration - 0.4);
+
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(1400 * multiplier, now);
+
+          gain.gain.value = 0.18 / (idx + 1);
+
+          osc.connect(filter);
+          filter.connect(gain);
+          gain.connect(masterGain);
+
+          osc.start(now);
+          osc.stop(now + duration);
+        });
+
+        // Exhaust backfire pop
+        var bufferSize = Math.floor(audioCtx.sampleRate * 0.15);
+        var noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        var output = noiseBuffer.getChannelData(0);
+        for (var i = 0; i < bufferSize; i++) {
+          output[i] = Math.random() * 2 - 1;
+        }
+        var whiteNoise = audioCtx.createBufferSource();
+        whiteNoise.buffer = noiseBuffer;
+        var noiseFilter = audioCtx.createBiquadFilter();
+        noiseFilter.type = 'bandpass';
+        noiseFilter.frequency.value = 900;
+        var noiseGain = audioCtx.createGain();
+        noiseGain.gain.setValueAtTime(0.01, now + 0.55);
+        noiseGain.gain.exponentialRampToValueAtTime(0.22, now + 0.65);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.85);
+        whiteNoise.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(masterGain);
+        whiteNoise.start(now + 0.55);
+      }
+
+      // ──────────────────────────────────────────
+      // 5. THREE.JS 3D SHOWROOM SCENE
+      // ──────────────────────────────────────────
+      var container = document.getElementById('webgl-container');
+      var width = window.innerWidth;
+      var height = window.innerHeight;
+
+      var renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        powerPreference: 'high-performance',
+        preserveDrawingBuffer: true // Required for 4K screenshot
+      });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 0.95;
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      if (renderer.outputEncoding) renderer.outputEncoding = THREE.sRGBEncoding;
+      container.appendChild(renderer.domElement);
+
+      var scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x06070a);
+      scene.fog = new THREE.FogExp2(0x06070a, 0.035);
+
+      var camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 150);
+      camera.position.set(2.8, 1.25, 4.6);
+      camera.lookAt(0, 0.48, 0.15);
+
+      // UnrealBloomPass Post-Processing
+      var composer = null;
+      var bloomPass = null;
+      if (typeof THREE.EffectComposer !== 'undefined' && typeof THREE.UnrealBloomPass !== 'undefined') {
+        try {
+          composer = new THREE.EffectComposer(renderer);
+          composer.addPass(new THREE.RenderPass(scene, camera));
+          bloomPass = new THREE.UnrealBloomPass(
+            new THREE.Vector2(width, height),
+            0.45, // strength
+            0.3,  // radius
+            0.85  // threshold
+          );
+          composer.addPass(bloomPass);
+        } catch (e) {
+          composer = null;
+        }
+      }
+
+      // Showroom Floor
+      var floorGeo = new THREE.PlaneGeometry(60, 60);
+      var floorMat = new THREE.MeshStandardMaterial({
+        color: 0x12141a,
+        metalness: 0.75,
+        roughness: 0.28
+      });
+      var floor = new THREE.Mesh(floorGeo, floorMat);
+      floor.rotation.x = -Math.PI / 2;
+      floor.receiveShadow = true;
+      scene.add(floor);
+
+      var floorGrid = new THREE.GridHelper(40, 40, 0x3a3f4d, 0x181a22);
+      floorGrid.position.y = 0.005;
+      scene.add(floorGrid);
+
+      // Diamond Grid Ceiling Lights
+      var CEIL_HEIGHT = 7.8;
+      var DIAMOND_COLS = 12;
+      var DIAMOND_ROWS = 8;
+      var SPACING_X = 2.4;
+      var SPACING_Z = 2.4;
+
+      var ceilGeo = new THREE.PlaneGeometry(32, 24);
+      var ceilMat = new THREE.MeshStandardMaterial({ color: 0x08090d, roughness: 0.95 });
+      var ceilingSlab = new THREE.Mesh(ceilGeo, ceilMat);
+      ceilingSlab.rotation.x = Math.PI / 2;
+      ceilingSlab.position.y = CEIL_HEIGHT + 0.1;
+      scene.add(ceilingSlab);
+
+      var diamondSegments = [];
+      for (var r = 0; r <= DIAMOND_ROWS; r++) {
+        for (var c = 0; c <= DIAMOND_COLS; c++) {
+          var cx = (c - DIAMOND_COLS / 2) * SPACING_X;
+          var cz = (r - DIAMOND_ROWS / 2) * SPACING_Z;
+          if (c < DIAMOND_COLS && r < DIAMOND_ROWS) {
+            diamondSegments.push(cx, CEIL_HEIGHT, cz, cx + SPACING_X, CEIL_HEIGHT, cz + SPACING_Z);
+          }
+          if (c > 0 && r < DIAMOND_ROWS) {
+            diamondSegments.push(cx, CEIL_HEIGHT, cz, cx - SPACING_X, CEIL_HEIGHT, cz + SPACING_Z);
+          }
+        }
+      }
+
+      var diamondLineGeo = new THREE.BufferGeometry();
+      diamondLineGeo.setAttribute('position', new THREE.Float32BufferAttribute(diamondSegments, 3));
+      var diamondTubeMat = new THREE.LineBasicMaterial({
+        color: 0xffedd5,
+        linewidth: 1.5,
+        transparent: true,
+        opacity: 0.85
+      });
+      scene.add(new THREE.LineSegments(diamondLineGeo, diamondTubeMat));
+
+      var ledSpotlights = [];
+      var warmCeilingLight = new THREE.PointLight(0xffedd5, 0.6, 20, 1.8);
+      warmCeilingLight.position.set(0, CEIL_HEIGHT - 0.2, 0);
+      scene.add(warmCeilingLight);
+
+      for (var dr = 2; dr <= DIAMOND_ROWS - 2; dr += 3) {
+        for (var dc = 3; dc <= DIAMOND_COLS - 3; dc += 3) {
+          var dx = (dc - DIAMOND_COLS / 2) * SPACING_X;
+          var dz = (dr - DIAMOND_ROWS / 2) * SPACING_Z;
+          var spot = new THREE.SpotLight(0xfff5e0, 0.65, 16, Math.PI / 7, 0.6, 1.5);
+          spot.position.set(dx, CEIL_HEIGHT, dz);
+          spot.target.position.set(dx * 0.35, 0, dz * 0.35);
+          scene.add(spot);
+          scene.add(spot.target);
+          ledSpotlights.push(spot);
+        }
+      }
+
+      var ambientLight = new THREE.AmbientLight(0x0a0c12, 0.65);
+      scene.add(ambientLight);
+
+      var keyLight = new THREE.SpotLight(0xfff7ed, 1.6, 25, Math.PI / 6, 0.5, 1.2);
+      keyLight.position.set(0, 6.8, 5.0);
+      keyLight.target.position.set(0, 0.45, 0);
+      keyLight.castShadow = true;
+      keyLight.shadow.mapSize.width = 1024;
+      keyLight.shadow.mapSize.height = 1024;
+      scene.add(keyLight);
+      scene.add(keyLight.target);
+
+      var rimL = new THREE.DirectionalLight(0x1e293b, 1.2); rimL.position.set(-8, 4, -4); scene.add(rimL);
+      var rimR = new THREE.DirectionalLight(0x2d1b4e, 0.9); rimR.position.set(8, 4, -4);  scene.add(rimR);
+
+      // Underglow Neon Light
+      var underglowLight = new THREE.PointLight(0x000000, 0, 6, 2.0);
+      underglowLight.position.set(0, 0.15, 0);
+      scene.add(underglowLight);
+
+      // ──────────────────────────────────────────
+      // 6. THE LAMBORGHINI AVENTADOR SV
+      // ──────────────────────────────────────────
+      var carGroup = new THREE.Group();
+      scene.add(carGroup);
+
+      var activeDoorLeft = null;
+      var activeDoorRight = null;
+
+      var matMatteGrigio = new THREE.MeshStandardMaterial({
+        color: 0x2e3036,
+        metalness: 0.42,
+        roughness: 0.48
+      });
+
+      var matCarbon = new THREE.MeshStandardMaterial({
+        color: 0x0d0e12,
+        metalness: 0.45,
+        roughness: 0.28
+      });
+
+      var matGlass = new THREE.MeshPhysicalMaterial({
+        color: 0x0d121c,
+        metalness: 0.2,
+        roughness: 0.05,
+        transmission: 0.88,
+        transparent: true,
+        opacity: 0.45
+      });
+
+      var matYLED = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      var matAmberMarker = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+      var matCaliperGold = new THREE.MeshStandardMaterial({ color: 0xd4af37, metalness: 0.85, roughness: 0.25 });
+      var matRimGloss = new THREE.MeshStandardMaterial({ color: 0x090a0d, metalness: 0.95, roughness: 0.08 });
+      var matTireRubber = new THREE.MeshStandardMaterial({ color: 0x121316, roughness: 0.88 });
+      var matChrome = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.98, roughness: 0.08 });
+
+      function createPart(geo, mat, x, y, z, rx, ry, rz, parent) {
+        var m = new THREE.Mesh(geo, mat);
+        m.position.set(x || 0, y || 0, z || 0);
+        m.rotation.set(rx || 0, ry || 0, rz || 0);
+        m.castShadow = true;
+        m.receiveShadow = true;
+        (parent || carGroup).add(m);
+        return m;
+      }
+
+      // Procedural Aventador Bodywork
+      createPart(new THREE.BoxGeometry(2.05, 0.24, 4.4), matMatteGrigio, 0, 0.22, 0);
+      createPart(new THREE.BoxGeometry(1.92, 0.45, 3.8), matMatteGrigio, 0, 0.48, -0.1);
+      createPart(new THREE.BoxGeometry(1.68, 0.22, 1.45), matMatteGrigio, 0, 0.46, 1.25, -0.18, 0, 0);
+      createPart(new THREE.CylinderGeometry(0.04, 0.04, 0.01, 8), matCaliperGold, 0, 0.52, 1.75, -0.25, 0, 0);
+
+      createPart(new THREE.BoxGeometry(1.5, 0.12, 0.72), matCarbon, 0, 0.28, 1.95, -0.25, 0, 0);
+      createPart(new THREE.BoxGeometry(2.1, 0.06, 0.42), matCarbon, 0, 0.1, 2.05);
+      createPart(new THREE.BoxGeometry(0.35, 0.18, 0.45), matCarbon, -0.85, 0.22, 1.95, 0.1, -0.3, 0);
+      createPart(new THREE.BoxGeometry(0.35, 0.18, 0.45), matCarbon, 0.85, 0.22, 1.95, 0.1, 0.3, 0);
+
+      createPart(new THREE.BoxGeometry(0.12, 0.18, 3.6), matCarbon, -1.04, 0.16, 0);
+      createPart(new THREE.BoxGeometry(0.12, 0.18, 3.6), matCarbon, 1.04, 0.16, 0);
+      createPart(new THREE.BoxGeometry(0.2, 0.35, 0.75), matCarbon, -0.96, 0.52, -0.65, 0, 0.18, 0);
+      createPart(new THREE.BoxGeometry(0.2, 0.35, 0.75), matCarbon, 0.96, 0.52, -0.65, 0, -0.18, 0);
+
+      createPart(new THREE.BoxGeometry(1.42, 0.48, 1.9), matMatteGrigio, 0, 0.92, -0.15, -0.06, 0, 0);
+      createPart(new THREE.BoxGeometry(1.3, 0.48, 0.08), matGlass, 0, 0.88, 0.68, -0.68, 0, 0);
+      createPart(new THREE.BoxGeometry(0.06, 0.32, 1.1), matGlass, -0.68, 0.86, -0.1);
+      createPart(new THREE.BoxGeometry(0.06, 0.32, 1.1), matGlass, 0.68, 0.86, -0.1);
+
+      for (var l = 0; l < 4; l++) {
+        createPart(new THREE.BoxGeometry(1.15, 0.04, 0.2), matCarbon, 0, 0.78 - l * 0.04, -0.9 - l * 0.22, 0.35, 0, 0);
+      }
+
+      // Rear Diffuser & Exhaust
+      createPart(new THREE.BoxGeometry(1.95, 0.32, 0.8), matMatteGrigio, 0, 0.46, -1.85, 0.12, 0, 0);
+      createPart(new THREE.BoxGeometry(1.85, 0.14, 0.5), matCarbon, 0, 0.16, -2.15, 0.28, 0, 0);
+      for (var ex = -1; ex <= 2; ex++) {
+        createPart(new THREE.CylinderGeometry(0.045, 0.05, 0.28, 12), matChrome, (ex - 0.5) * 0.12, 0.38, -2.2, Math.PI / 2, 0, 0);
+      }
+
+      // Backfire Exhaust Flames (Glowing orange cones at tips)
+      var matFlames = new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0 });
+      var flameLeft = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.45, 12), matFlames);
+      flameLeft.rotation.x = -Math.PI / 2;
+      flameLeft.position.set(-0.12, 0.38, -2.45);
+      carGroup.add(flameLeft);
+
+      var flameRight = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.45, 12), matFlames);
+      flameRight.rotation.x = -Math.PI / 2;
+      flameRight.position.set(0.12, 0.38, -2.45);
+      carGroup.add(flameRight);
+
+      // SV Wing
+      var wingGroup = new THREE.Group();
+      createPart(new THREE.BoxGeometry(2.3, 0.05, 0.42), matCarbon, 0, 0, 0, 0.08, 0, 0, wingGroup);
+      createPart(new THREE.BoxGeometry(0.05, 0.22, 0.46), matCarbon, -1.15, 0.04, 0, 0, 0, 0, wingGroup);
+      createPart(new THREE.BoxGeometry(0.05, 0.22, 0.46), matCarbon, 1.15, 0.04, 0, 0, 0, 0, wingGroup);
+      createPart(new THREE.BoxGeometry(0.06, 0.38, 0.12), matCarbon, -0.55, -0.18, -0.05, -0.18, 0, 0, wingGroup);
+      createPart(new THREE.BoxGeometry(0.06, 0.38, 0.12), matCarbon, 0.55, -0.18, -0.05, -0.18, 0, 0, wingGroup);
+      wingGroup.position.set(0, 1.18, -1.82);
+      carGroup.add(wingGroup);
+
+      // Y-LED Signature
+      function buildYHeadlight(side) {
+        var yg = new THREE.Group();
+        createPart(new THREE.BoxGeometry(0.035, 0.03, 0.22), matYLED, 0, 0, 0, 0, 0, 0, yg);
+        createPart(new THREE.BoxGeometry(0.14, 0.03, 0.035), matYLED, -0.06, 0, 0.09, 0, 0.55, 0, yg);
+        createPart(new THREE.BoxGeometry(0.14, 0.03, 0.035), matYLED, 0.06, 0, 0.09, 0, -0.55, 0, yg);
+        yg.position.set(side * 0.68, 0.48, 1.68);
+        yg.rotation.set(-0.25, side * 0.18, 0);
+        carGroup.add(yg);
+        return yg;
+      }
+      buildYHeadlight(-1);
+      buildYHeadlight(1);
+
+      createPart(new THREE.BoxGeometry(0.03, 0.04, 0.18), matAmberMarker, -1.04, 0.48, 1.45, 0, 0, 0);
+      createPart(new THREE.BoxGeometry(0.03, 0.04, 0.18), matAmberMarker, 1.04, 0.48, 1.45, 0, 0, 0);
+
+      var headlightSpotL = new THREE.SpotLight(0xfffbeb, 1.8, 16, Math.PI / 7, 0.4, 1.5);
+      headlightSpotL.position.set(-0.68, 0.5, 1.8);
+      headlightSpotL.target.position.set(-0.68, 0, 14);
+      scene.add(headlightSpotL);
+      scene.add(headlightSpotL.target);
+
+      var headlightSpotR = new THREE.SpotLight(0xfffbeb, 1.8, 16, Math.PI / 7, 0.4, 1.5);
+      headlightSpotR.position.set(0.68, 0.5, 1.8);
+      headlightSpotR.target.position.set(0.68, 0, 14);
+      scene.add(headlightSpotR);
+      scene.add(headlightSpotR.target);
+
+      // Scissor Doors
+      var leftDoorHinge = new THREE.Group();
+      leftDoorHinge.position.set(-1.02, 0.4, 0.65);
+      carGroup.add(leftDoorHinge);
+
+      var rightDoorHinge = new THREE.Group();
+      rightDoorHinge.position.set(1.02, 0.4, 0.65);
+      carGroup.add(rightDoorHinge);
+
+      var doorGeo = new THREE.BoxGeometry(0.08, 0.62, 1.5);
+      var leftDoorMesh = new THREE.Mesh(doorGeo, matMatteGrigio);
+      leftDoorMesh.position.set(0, 0.15, -0.65);
+      leftDoorHinge.add(leftDoorMesh);
+
+      var rightDoorMesh = new THREE.Mesh(doorGeo, matMatteGrigio);
+      rightDoorMesh.position.set(0, 0.15, -0.65);
+      rightDoorHinge.add(rightDoorMesh);
+
+      createPart(new THREE.BoxGeometry(0.24, 0.08, 0.12), matCarbon, -0.15, 0.35, -0.2, 0, 0.2, 0, leftDoorHinge);
+      createPart(new THREE.BoxGeometry(0.24, 0.08, 0.12), matCarbon, 0.15, 0.35, -0.2, 0, -0.2, 0, rightDoorHinge);
+
+      leftDoorHinge.rotation.set(-1.18, 0, 0.24);
+      rightDoorHinge.rotation.set(-1.18, 0, -0.24);
+      activeDoorLeft = leftDoorHinge;
+      activeDoorRight = rightDoorHinge;
+
+      // Wheels
+      var wheels = [];
+      var caliperMeshes = [];
+      function buildWheel(x, z, radius) {
+        var wGroup = new THREE.Group();
+        wGroup.position.set(x, radius, z);
+
+        var hub = new THREE.Group();
+        wGroup.add(hub);
+
+        var tire = new THREE.Mesh(new THREE.TorusGeometry(radius * 0.88, 0.15, 18, 32), matTireRubber);
+        tire.rotation.y = Math.PI / 2;
+        tire.castShadow = true;
+        hub.add(tire);
+
+        var rim = new THREE.Mesh(new THREE.CylinderGeometry(radius * 0.72, radius * 0.72, 0.28, 12), matRimGloss);
+        rim.rotation.z = Math.PI / 2;
+        hub.add(rim);
+
+        for (var sp = 0; sp < 10; sp++) {
+          var spoke = new THREE.Mesh(new THREE.BoxGeometry(0.025, radius * 0.68, 0.025), matRimGloss);
+          var ang = (sp / 10) * Math.PI * 2;
+          spoke.position.set(0, (radius * 0.32) * Math.cos(ang), (radius * 0.32) * Math.sin(ang));
+          spoke.rotation.x = ang;
+          rim.add(spoke);
+        }
+
+        var rotor = new THREE.Mesh(new THREE.CylinderGeometry(radius * 0.58, radius * 0.58, 0.06, 20), new THREE.MeshStandardMaterial({ color: 0x52525b, metalness: 0.85, roughness: 0.3 }));
+        rotor.rotation.z = Math.PI / 2;
+        hub.add(rotor);
+
+        var caliper = new THREE.Mesh(new THREE.BoxGeometry(0.08, radius * 0.42, 0.18), matCaliperGold);
+        caliper.position.set(x > 0 ? -0.06 : 0.06, radius * 0.28, 0);
+        wGroup.add(caliper);
+        caliperMeshes.push(caliper);
+
+        carGroup.add(wGroup);
+        wheels.push(hub);
+        return wGroup;
+      }
+
+      buildWheel(-1.05, 1.45, 0.42);
+      buildWheel(1.05, 1.45, 0.42);
+      buildWheel(-1.08, -1.35, 0.46);
+      buildWheel(1.08, -1.35, 0.46);
+
+      var shadowBlob = new THREE.Mesh(
+        new THREE.PlaneGeometry(2.4, 4.8),
+        new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.72 })
+      );
+      shadowBlob.rotation.x = -Math.PI / 2;
+      shadowBlob.position.y = 0.008;
+      carGroup.add(shadowBlob);
+
+      // ──────────────────────────────────────────
+      // 7. GLTF/GLB MODEL LOADER (BLENDER)
+      // ──────────────────────────────────────────
+      var gltfLoader = (typeof THREE.GLTFLoader !== 'undefined') ? new THREE.GLTFLoader() : null;
+      var bodyMaterials = [];
+      var headlightMaterials = [];
+      var wheelNodes = [];
+
+      function applyLoadedModel(loadedModel) {
+        while (carGroup.children.length > 0) {
+          carGroup.remove(carGroup.children[0]);
+        }
+        wheels = [];
+        wheelNodes = [];
+        bodyMaterials = [];
+        headlightMaterials = [];
+        caliperMeshes = [];
+
+        var wrapper = new THREE.Group();
+        loadedModel.rotation.y = Math.PI / 2;
+        wrapper.add(loadedModel);
+
+        var box = new THREE.Box3().setFromObject(wrapper);
+        var size = new THREE.Vector3();
+        box.getSize(size);
+        var targetLength = 4.8;
+        var maxDim = Math.max(size.x, size.z);
+        var scale = targetLength / maxDim;
+        wrapper.scale.set(scale, scale, scale);
+
+        box.setFromObject(wrapper);
+        var center = new THREE.Vector3();
+        box.getCenter(center);
+        wrapper.position.x = -center.x;
+        wrapper.position.z = -center.z;
+        wrapper.position.y = -box.min.y;
+
+        activeDoorLeft = null;
+        activeDoorRight = null;
+
+        wrapper.traverse(function (child) {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+
+            var matName = (child.material && child.material.name) ? child.material.name : '';
+
+            if (matName === 'Mt_Body' || matName === 'Mt_MirrorCover' || matName.indexOf('Body') !== -1) {
+              child.material.roughness = 0.48;
+              child.material.metalness = 0.42;
+              child.material.color.setHex(0x2e3036);
+              child.material.needsUpdate = true;
+              bodyMaterials.push(child.material);
+            }
+
+            if (matName === 'Mt_AlloyWheels' || matName.indexOf('Wheel') !== -1) {
+              child.material.color.setHex(0x0a0b0e);
+              child.material.roughness = 0.12;
+              child.material.metalness = 0.95;
+            }
+
+            if (matName === 'Mt_BrakeCaliper' || matName.indexOf('Caliper') !== -1) {
+              child.material.color.setHex(0xd4af37);
+              child.material.metalness = 0.85;
+              child.material.roughness = 0.25;
+              bodyMaterials.push(child.material);
+            }
+
+            if (matName === 'Mt_Light_Emissive' || matName.indexOf('Light') !== -1 || matName.indexOf('Emissive') !== -1) {
+              child.material.emissive = new THREE.Color(0xffffff);
+              child.material.emissiveIntensity = 4.0;
+              headlightMaterials.push(child.material);
+            }
+
+            if (matName === 'Mt_WindScreens' || matName === 'Mt_Glass_Translucent') {
+              child.material.transparent = true;
+              child.material.opacity = 0.45;
+              child.material.roughness = 0.05;
+              child.material.metalness = 0.1;
+            }
+
+            if (matName === 'Mt_ABS_Black_Mat' || matName === 'Mt_Abs_Black_Gloss' || matName === 'Mt_Metal_Black_Glossy') {
+              child.material.roughness = 0.35;
+              child.material.metalness = 0.6;
+            }
+
+            if (matName === 'Mt_Shadow_Plane' || (child.name && child.name.indexOf('Shadow') !== -1)) {
+              child.material.transparent = true;
+              child.material.opacity = 0.65;
+              child.material.depthWrite = false;
+            }
+          }
+
+          var nName = (child.name || '').toLowerCase();
+          if (nName.indexOf('wheelhub') !== -1) {
+            wheelNodes.push(child);
+          }
+          if (nName.indexOf('door') !== -1 && (nName.indexOf('l') !== -1 || nName.indexOf('left') !== -1)) {
+            activeDoorLeft = child;
+          }
+          if (nName.indexOf('door') !== -1 && (nName.indexOf('r') !== -1 || nName.indexOf('right') !== -1)) {
+            activeDoorRight = child;
+          }
+        });
+
+        carGroup.add(wrapper);
+        carGroup.add(shadowBlob);
+      }
+
+      // Auto-load aventador.glb if present
+      if (gltfLoader) {
+        gltfLoader.load('./assets/aventador.glb', function (gltf) {
+          applyLoadedModel(gltf.scene);
+          var importLabel = document.getElementById('import-label');
+          if (importLabel) importLabel.textContent = '✓ MODEL AVENTADOR SV';
+        }, undefined, function (err) {
+          console.log('Using procedural SV model:', err);
+        });
+      }
+
+      // ──────────────────────────────────────────
+      // 8. CUSTOMIZER: COLOR, FINISH, CALIPERS, NEONS
+      // ──────────────────────────────────────────
+      var currentPaintHex = 0x2e3036;
+
+      window.setCarColor = function (hex, name, roughness, metalness) {
+        currentPaintHex = hex;
+        bodyMaterials.forEach(function (mat) {
+          if (mat.color) mat.color.setHex(hex);
+          if (roughness !== undefined) mat.roughness = roughness;
+          if (metalness !== undefined) mat.metalness = metalness;
+          mat.needsUpdate = true;
+        });
+        if (matMatteGrigio) {
+          matMatteGrigio.color.setHex(hex);
+          if (roughness !== undefined) matMatteGrigio.roughness = roughness;
+          if (metalness !== undefined) matMatteGrigio.metalness = metalness;
+        }
+
+        var disp = document.getElementById('color-name-display');
+        if (disp) disp.textContent = name;
+        var heroDisp = document.getElementById('hero-finish-highlight');
+        if (heroDisp) heroDisp.textContent = name;
+
+        document.querySelectorAll('.color-btn').forEach(function (b) {
+          b.classList.remove('border-amber-400', 'scale-115');
+        });
+        if (window.event && window.event.target) {
+          window.event.target.classList.add('border-amber-400', 'scale-115');
+        }
+        playUiClickSound();
+      };
+
+      window.setPaintFinish = function (type) {
+        var r = 0.48, m = 0.42;
+        if (type === 'gloss') { r = 0.15; m = 0.65; }
+        else if (type === 'metallic') { r = 0.28; m = 0.85; }
+
+        bodyMaterials.forEach(function (mat) {
+          mat.roughness = r;
+          mat.metalness = m;
+          mat.needsUpdate = true;
+        });
+        if (matMatteGrigio) {
+          matMatteGrigio.roughness = r;
+          matMatteGrigio.metalness = m;
+        }
+
+        document.querySelectorAll('.finish-mode-btn').forEach(function (btn) {
+          btn.classList.remove('active', 'border-amber-400', 'text-amber-300', 'glass-gold');
+          btn.classList.add('glass-panel', 'text-white/70');
+        });
+        if (window.event && window.event.currentTarget) {
+          window.event.currentTarget.classList.add('active', 'border-amber-400', 'text-amber-300', 'glass-gold');
+          window.event.currentTarget.classList.remove('glass-panel', 'text-white/70');
+        }
+        playUiClickSound();
+      };
+
+      window.setCaliperColor = function (hex) {
+        matCaliperGold.color.setHex(hex);
+        caliperMeshes.forEach(function (c) {
+          if (c.material && c.material.color) c.material.color.setHex(hex);
+        });
+        playUiClickSound();
+      };
+
+      window.setUnderglowNeon = function (hex) {
+        if (!underglowLight) return;
+        if (hex === 0) {
+          underglowLight.intensity = 0;
+        } else {
+          underglowLight.color.setHex(hex);
+          underglowLight.intensity = 2.4;
+        }
+        playUiClickSound();
+      };
+
+      // ──────────────────────────────────────────
+      // 9. LAMBORGHINI MISSILE STARTER & ENGINE
+      // ──────────────────────────────────────────
+      var isLidOpen = false;
+      var isEngineRunning = false;
+      var currentRpm = 0;
+      var targetRpm = 0;
+      var currentSpeed = 0;
+
+      window.toggleMissileLid = function () {
+        isLidOpen = !isLidOpen;
+        var lid = document.getElementById('missile-lid');
+        if (lid) lid.classList.toggle('open', isLidOpen);
+        playUiClickSound();
+      };
+
+      window.handleStartEngine = function () {
+        if (!isLidOpen) {
+          toggleMissileLid();
+        }
+
+        isEngineRunning = !isEngineRunning;
+        var btn = document.getElementById('btn-start-engine');
+        var dot = document.getElementById('engine-live-dot');
+        var banner = document.getElementById('engine-banner-title');
+        var stText = document.getElementById('engine-status-text');
+
+        if (isEngineRunning) {
+          btn.classList.add('engine-btn-glow', 'running');
+          dot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-ping';
+          banner.textContent = 'ĐỘNG CƠ: ĐANG CHẠY (V12 VIBRATION)';
+          banner.className = 'font-mono-num text-xs font-bold text-emerald-400 uppercase tracking-wider';
+          stText.textContent = 'STOP';
+
+          // Trigger Ignition sequence
+          playV12Sound(true);
+          startIdleDrone();
+
+          // Flash exhaust flame
+          if (typeof gsap !== 'undefined') {
+            gsap.to(matFlames, { opacity: 0.95, duration: 0.15, yoyo: true, repeat: 5, onComplete: function () { matFlames.opacity = 0; } });
+            gsap.fromTo(carGroup.position, { y: -0.015 }, { y: 0.015, duration: 0.04, repeat: 14, yoyo: true, ease: 'none', onComplete: function () { carGroup.position.y = 0; } });
+          }
+
+          // Needle sweep to 8500 RPM then idle at 950
+          targetRpm = 8500;
+          setTimeout(function () {
+            if (isEngineRunning) targetRpm = 950;
+          }, 1100);
+
+        } else {
+          btn.classList.remove('running');
+          dot.className = 'w-2 h-2 rounded-full bg-red-500 animate-pulse';
+          banner.textContent = 'ĐỘNG CƠ: ĐANG TẮT';
+          banner.className = 'font-mono-num text-xs font-bold text-red-400 uppercase tracking-wider';
+          stText.textContent = 'START';
+
+          stopIdleDrone();
+          targetRpm = 0;
+          currentSpeed = 0;
+          playUiClickSound();
+        }
+      };
+
+      // Rev Engine Function (Spacebar or Button)
+      function triggerRev() {
+        if (!isEngineRunning) {
+          handleStartEngine();
+          return;
+        }
+        playV12Sound(true);
+
+        // Shoot RPM to 8400
+        targetRpm = 8400 + Math.random() * 200;
+        currentSpeed = Math.floor(Math.random() * 80 + 120);
+
+        if (typeof gsap !== 'undefined') {
+          gsap.to(matFlames, { opacity: 0.9, duration: 0.1, yoyo: true, repeat: 4, onComplete: function () { matFlames.opacity = 0; } });
+          gsap.fromTo(carGroup.position, { y: -0.01 }, { y: 0.01, duration: 0.04, repeat: 8, yoyo: true, ease: 'none', onComplete: function () { carGroup.position.y = 0; } });
+        }
+
+        setTimeout(function () {
+          if (isEngineRunning) {
+            targetRpm = 950;
+            currentSpeed = 0;
+          }
+        }, 1200);
+      }
+
+      var btnRev = document.getElementById('btn-rev-engine');
+      if (btnRev) btnRev.addEventListener('click', triggerRev);
+
+      // Keyboard spacebar to Rev V12
+      window.addEventListener('keydown', function (e) {
+        if (e.code === 'Space' && !e.repeat) {
+          if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) return;
+          e.preventDefault();
+          triggerRev();
+        }
+        if (e.code === 'Escape') {
+          togglePhotoMode(false);
+          closeVipPassModal();
+        }
+      });
+
+      // ──────────────────────────────────────────
+      // 10. 4K PHOTO MODE SCREENSHOT ENGINE
+      // ──────────────────────────────────────────
+      window.togglePhotoMode = function (active) {
+        if (active) {
+          document.body.classList.add('photo-mode-active');
+        } else {
+          document.body.classList.remove('photo-mode-active');
+        }
+        playUiClickSound();
+      };
+
+      var fovSlider = document.getElementById('photo-fov-slider');
+      if (fovSlider) {
+        fovSlider.addEventListener('input', function () {
+          camera.fov = parseFloat(fovSlider.value);
+          camera.updateProjectionMatrix();
+        });
+      }
+
+      window.capture4kPhoto = function () {
+        playUiClickSound();
+        var tempBar = document.getElementById('photo-mode-bar');
+        if (tempBar) tempBar.style.display = 'none';
+
+        // Render high-res frame
+        renderer.render(scene, camera);
+
+        var dataURL = renderer.domElement.toDataURL('image/png');
+        var link = document.createElement('a');
+        link.download = 'Lamborghini_Aventador_SV_Dinh_Huu_Phuoc_4K.png';
+        link.href = dataURL;
+        link.click();
+
+        if (tempBar) tempBar.style.display = 'flex';
+      };
+
+      // ──────────────────────────────────────────
+      // 11. CAMERA VIEWS & GSAP STORYBOARD
+      // ──────────────────────────────────────────
+      var cameraState = {
+        radius: 5.4,
+        theta: 0.58,
+        phi: 1.42,
+        targetY: 0.48,
+        targetZ: 0.15
+      };
+
+      var mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
+      window.addEventListener('mousemove', function (e) {
+        mouse.targetX = (e.clientX / window.innerWidth - 0.5) * 2;
+        mouse.targetY = (e.clientY / window.innerHeight - 0.5) * 2;
+      });
+
+      var isPointerDown = false;
+      var pointerStartX = 0;
+      var pointerStartY = 0;
+      var startTheta = 0;
+      var startPhi = 0;
+      var autoRotate = false;
+
+      window.addEventListener('pointerdown', function (e) {
+        if (e.target.closest('button') || e.target.closest('input') || e.target.closest('a') || e.target.closest('#location-widget') || e.target.closest('#camera-views-bar') || e.target.closest('#vip-pass-modal')) {
+          return;
+        }
+        isPointerDown = true;
+        pointerStartX = e.clientX;
+        pointerStartY = e.clientY;
+        startTheta = cameraState.theta;
+        startPhi = cameraState.phi;
+      });
+
+      window.addEventListener('pointermove', function (e) {
+        if (!isPointerDown) return;
+        var dx = e.clientX - pointerStartX;
+        var dy = e.clientY - pointerStartY;
+        cameraState.theta = startTheta - dx * 0.006;
+        cameraState.phi = Math.max(0.65, Math.min(1.52, startPhi + dy * 0.005));
+      });
+
+      window.addEventListener('pointerup', function () { isPointerDown = false; });
+      window.addEventListener('pointercancel', function () { isPointerDown = false; });
+
+      window.setCameraView = function (presetName) {
+        autoRotate = false;
+        var btnRot = document.getElementById('btn-auto-rotate');
+        if (btnRot) {
+          btnRot.classList.remove('border-amber-400', 'text-amber-300', 'glass-gold');
+          btnRot.classList.add('text-white/60', 'glass-panel');
+        }
+
+        document.querySelectorAll('.cam-view-btn').forEach(function (btn) {
+          btn.classList.remove('active', 'border-amber-400', 'text-amber-300', 'glass-gold');
+          btn.classList.add('text-white/60', 'glass-panel');
+        });
+        if (window.event && window.event.currentTarget) {
+          window.event.currentTarget.classList.add('active', 'border-amber-400', 'text-amber-300', 'glass-gold');
+          window.event.currentTarget.classList.remove('text-white/60', 'glass-panel');
+        }
+
+        playV12Sound(false);
+
+        var presets = {
+          hero: { radius: 5.4, theta: 0.58, phi: 1.42, targetY: 0.48, targetZ: 0.15 },
+          front: { radius: 3.2, theta: 0.20, phi: 1.48, targetY: 0.36, targetZ: 1.35 },
+          side: { radius: 4.2, theta: Math.PI * 0.52, phi: 1.44, targetY: 0.50, targetZ: 0.15 },
+          rear: { radius: 4.8, theta: Math.PI - 0.42, phi: 1.38, targetY: 0.70, targetZ: -1.2 }
+        };
+
+        var target = presets[presetName] || presets.hero;
+        if (typeof gsap !== 'undefined') {
+          gsap.to(cameraState, {
+            radius: target.radius,
+            theta: target.theta,
+            phi: target.phi,
+            targetY: target.targetY,
+            targetZ: target.targetZ,
+            duration: 1.2,
+            ease: 'power3.inOut'
+          });
+        }
+      };
+
+      window.toggleAutoRotate = function () {
+        autoRotate = !autoRotate;
+        var btnRot = document.getElementById('btn-auto-rotate');
+        if (btnRot) {
+          btnRot.classList.toggle('active', autoRotate);
+          btnRot.classList.toggle('border-amber-400', autoRotate);
+          btnRot.classList.toggle('text-amber-300', autoRotate);
+          btnRot.classList.toggle('glass-gold', autoRotate);
+        }
+        playUiClickSound();
+      };
+
+      // Lenis Smooth Scroll
+      var lenis = null;
+      if (typeof Lenis !== 'undefined') {
+        lenis = new Lenis({
+          duration: 1.2,
+          easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+          smoothWheel: true
+        });
+        function lenisRaf(t) {
+          lenis.raf(t);
+          requestAnimationFrame(lenisRaf);
+        }
+        requestAnimationFrame(lenisRaf);
+      }
+
+      // GSAP ScrollTrigger
+      if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+
+        if (lenis) {
+          lenis.on('scroll', ScrollTrigger.update);
+          gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
+          gsap.ticker.lagSmoothing(0);
+        }
+
+        var camTL = gsap.timeline({
+          scrollTrigger: {
+            trigger: '#scroll-container',
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 1.5
+          }
+        });
+
+        camTL.to(cameraState, { radius: 3.2, theta: 0.20, phi: 1.48, targetY: 0.36, targetZ: 1.35, ease: 'power2.inOut' }, 0);
+        camTL.to(cameraState, { radius: 2.6, theta: Math.PI * 0.52, phi: 1.46, targetY: 0.42, targetZ: 1.25, ease: 'power2.inOut' }, 0.28);
+        camTL.to(cameraState, { radius: 4.8, theta: Math.PI - 0.42, phi: 1.38, targetY: 0.70, targetZ: -1.2, ease: 'power2.inOut' }, 0.58);
+        camTL.to(cameraState, { radius: 6.2, theta: Math.PI * 1.85, phi: 1.36, targetY: 0.55, targetZ: 0.0, ease: 'power2.inOut' }, 0.82);
+      }
+
+      // ──────────────────────────────────────────
+      // 12. SCISSOR DOORS & LIGHTS TOGGLES
+      // ──────────────────────────────────────────
+      var areDoorsOpen = true;
+      var btnDoors = document.getElementById('btn-toggle-doors');
+      var doorLabel = document.getElementById('door-btn-text');
+      if (btnDoors) {
+        btnDoors.classList.add('active');
+        btnDoors.addEventListener('click', function () {
+          areDoorsOpen = !areDoorsOpen;
+          btnDoors.classList.toggle('active', areDoorsOpen);
+          doorLabel.textContent = areDoorsOpen ? 'ĐÓNG CỬA CẮT KÉO' : 'MỞ CỬA CẮT KÉO';
+          playV12Sound(false);
+
+          var targetRx = areDoorsOpen ? -1.18 : 0;
+          var targetRzL = areDoorsOpen ? 0.24 : 0;
+          var targetRzR = areDoorsOpen ? -0.24 : 0;
+
+          if (typeof gsap !== 'undefined') {
+            if (activeDoorLeft) gsap.to(activeDoorLeft.rotation, { x: targetRx, z: targetRzL, duration: 1.4, ease: 'power3.out' });
+            if (activeDoorRight) gsap.to(activeDoorRight.rotation, { x: targetRx, z: targetRzR, duration: 1.4, ease: 'power3.out' });
+          } else {
+            if (activeDoorLeft) activeDoorLeft.rotation.set(targetRx, 0, targetRzL);
+            if (activeDoorRight) activeDoorRight.rotation.set(targetRx, 0, targetRzR);
+          }
+        });
+      }
+
+      var areLightsOn = true;
+      var btnLights = document.getElementById('btn-toggle-lights');
+      var lightLabel = document.getElementById('light-btn-text');
+      if (btnLights) {
+        btnLights.classList.add('active');
+        btnLights.addEventListener('click', function () {
+          areLightsOn = !areLightsOn;
+          btnLights.classList.toggle('active', areLightsOn);
+          lightLabel.textContent = areLightsOn ? 'TẮT ĐÈN PHA Y-LED' : 'BẬT ĐÈN PHA Y-LED';
+          playV12Sound(false);
+
+          var targetIntensity = areLightsOn ? 2.2 : 0;
+          if (typeof gsap !== 'undefined') {
+            gsap.to(headlightSpotL, { intensity: targetIntensity, duration: 0.4 });
+            gsap.to(headlightSpotR, { intensity: targetIntensity, duration: 0.4 });
+            if (bloomPass) gsap.to(bloomPass, { strength: areLightsOn ? 0.75 : 0.45, duration: 0.5 });
+          } else {
+            headlightSpotL.intensity = targetIntensity;
+            headlightSpotR.intensity = targetIntensity;
+          }
+          matYLED.color.setHex(areLightsOn ? 0xffffff : 0x64748b);
+        });
+      }
+
+      var btnSoundToggle = document.getElementById('btn-sound-toggle');
+      if (btnSoundToggle) {
+        btnSoundToggle.addEventListener('click', function () {
+          playV12Sound(true);
+        });
+      }
+
+      // Drag and drop for custom GLB model
+      var dropOverlay = document.getElementById('drop-overlay');
+      window.addEventListener('dragenter', function (e) {
+        e.preventDefault();
+        dropOverlay.classList.add('active');
+      });
+      window.addEventListener('dragover', function (e) { e.preventDefault(); });
+      window.addEventListener('dragleave', function (e) {
+        if (e.clientX <= 0 || e.clientY <= 0) dropOverlay.classList.remove('active');
+      });
+      window.addEventListener('drop', function (e) {
+        e.preventDefault();
+        dropOverlay.classList.remove('active');
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0 && gltfLoader) {
+          var reader = new FileReader();
+          reader.onload = function (evt) {
+            gltfLoader.parse(evt.target.result, '', function (gltf) {
+              applyLoadedModel(gltf.scene);
+              var importLabel = document.getElementById('import-label');
+              if (importLabel) importLabel.textContent = '✓ ĐÃ NẠP MODEL BLENDER';
+            });
+          };
+          reader.readAsArrayBuffer(e.dataTransfer.files[0]);
+        }
+      });
+
+      var fileInput = document.getElementById('model-file-input');
+      var btnImport = document.getElementById('btn-import-model');
+      if (btnImport && fileInput) {
+        btnImport.addEventListener('click', function () { fileInput.click(); });
+        fileInput.addEventListener('change', function () {
+          if (fileInput.files && fileInput.files.length > 0 && gltfLoader) {
+            var reader = new FileReader();
+            reader.onload = function (evt) {
+              gltfLoader.parse(evt.target.result, '', function (gltf) {
+                applyLoadedModel(gltf.scene);
+                var importLabel = document.getElementById('import-label');
+                if (importLabel) importLabel.textContent = '✓ ĐÃ NẠP MODEL BLENDER';
+              });
+            };
+            reader.readAsArrayBuffer(fileInput.files[0]);
+          }
+        });
+      }
+
+      // ──────────────────────────────────────────
+      // 13. 60 FPS RENDER LOOP & HUD UPDATES
+      // ──────────────────────────────────────────
+      window.addEventListener('resize', function () {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        renderer.setSize(width, height);
+        if (composer) composer.setSize(width, height);
+      });
+
+      var clock = new THREE.Clock();
+      var hudRpmEl = document.getElementById('hud-rpm-val');
+      var hudSpeedEl = document.getElementById('hud-speed-val');
+      var tachNeedle = document.getElementById('tach-needle');
+      var hudGearEl = document.getElementById('hud-gear-val');
+
+      function animate() {
+        requestAnimationFrame(animate);
+        var t = clock.getElapsedTime();
+
+        // RPM Smooth Interpolation
+        if (isEngineRunning && targetRpm === 950) {
+          // Subtle idle needle quiver
+          var idleJitter = Math.sin(t * 12) * 35;
+          currentRpm += (targetRpm + idleJitter - currentRpm) * 0.12;
+        } else {
+          currentRpm += (targetRpm - currentRpm) * 0.12;
+        }
+
+        // Update Tachometer Needle (-120deg to +120deg across 0 - 9000 RPM)
+        var needleDeg = -120 + (currentRpm / 9000) * 240;
+        needleDeg = Math.max(-120, Math.min(125, needleDeg));
+        if (tachNeedle) tachNeedle.style.transform = 'rotate(' + needleDeg + 'deg)';
+        if (hudRpmEl) hudRpmEl.textContent = Math.round(currentRpm);
+        if (hudSpeedEl) hudSpeedEl.textContent = currentSpeed;
+        if (hudGearEl) {
+          hudGearEl.textContent = (!isEngineRunning) ? 'GEAR: P' : (currentRpm > 3000 ? 'GEAR: 1' : 'GEAR: N');
+        }
+
+        // Turntable Auto-Rotation
+        if (autoRotate && !isPointerDown) {
+          cameraState.theta += 0.0035;
+        }
+
+        // Mouse Parallax
+        mouse.x += (mouse.targetX - mouse.x) * 0.06;
+        mouse.y += (mouse.targetY - mouse.y) * 0.06;
+
+        var th = cameraState.theta + mouse.x * 0.12;
+        var ph = Math.max(0.65, Math.min(1.52, cameraState.phi + mouse.y * 0.08));
+        var r = cameraState.radius;
+
+        camera.position.set(
+          r * Math.sin(ph) * Math.sin(th),
+          r * Math.cos(ph) + cameraState.targetY,
+          r * Math.sin(ph) * Math.cos(th) + cameraState.targetZ
+        );
+        camera.lookAt(0, cameraState.targetY, cameraState.targetZ);
+
+        keyLight.position.x = mouse.x * 2.2;
+        keyLight.position.z = 5.0 + mouse.y * 1.5;
+
+        // Suspension idle vibration
+        var idleShake = (isEngineRunning ? 0.012 : 0.003);
+        carGroup.position.y = Math.sin(t * (isEngineRunning ? 18 : 0.8)) * idleShake;
+        carGroup.rotation.y = Math.sin(t * 0.4) * 0.006;
+
+        // Wheel rotation
+        var ws = t * 0.8;
+        for (var w = 0; w < wheels.length; w++) wheels[w].rotation.x = ws;
+        for (var wn = 0; wn < wheelNodes.length; wn++) wheelNodes[wn].rotation.x = ws;
+
+        // Diamond ceiling lights pulse
+        var pulse = 0.65 + Math.sin(t * 1.5) * 0.1;
+        for (var sl = 0; sl < ledSpotlights.length; sl++) {
+          ledSpotlights[sl].intensity = pulse;
+        }
+
+        if (composer) {
+          composer.render();
+        } else {
+          renderer.render(scene, camera);
+        }
+      }
+
+      if (history.scrollRestoration) {
+        history.scrollRestoration = 'manual';
+      }
+      window.scrollTo(0, 0);
+
+      animate();
+
+      console.log('%c🏎️ ĐINH HỮU PHƯỚC — PRIVATE SUPERCAR GARAGE', 'background: #06070a; color: #d4af37; font-size: 14px; font-weight: bold; padding: 6px 12px; border: 1px solid #d4af37;');
+      console.log('%cThree.js r128 · GLTFLoader Active · Diamond Grid Ceiling · Web Audio API V12', 'color: #94a3b8; font-size: 11px;');
+    })();
+  </script>
+</body>
+</html>
